@@ -79,7 +79,7 @@ export default function Navbar() {
         .nav-center {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 20px;
         }
         .nav-item {
           font-size: 0.88rem;
