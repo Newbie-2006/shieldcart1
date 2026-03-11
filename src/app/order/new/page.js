@@ -25,8 +25,8 @@ function NewOrderForm() {
     const [paymentMethod, setPaymentMethod] = useState("online"); // "online" or "cod"
     const initialPlatform = searchParams.get("platform") || "Amazon";
     const [form, setForm] = useState({
-        product_url: searchParams.get("product_url") || "",
-        product_name: searchParams.get("product_name") || "",
+        product_url: searchParams.get("product_url") || searchParams.get("url") || "",
+        product_name: searchParams.get("product_name") || searchParams.get("reorder") || "",
         platform: PLATFORMS.includes(initialPlatform) ? initialPlatform : "Amazon",
         price: searchParams.get("price") || "",
         delivery_address: "",

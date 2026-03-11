@@ -329,7 +329,61 @@ export default function DashboardPage() {
                                     </div>
                                 )}
 
-                                {order.status !== "delivered" && order.status !== "cancelled" && order.status !== "refunded" && (
+                                {/* Inspection Failed Banner */}
+                                {order.status === "failed" && (
+                                    <div
+                                        onClick={(e) => e.stopPropagation()}
+                                        style={{
+                                            marginTop: "14px", padding: "16px",
+                                            background: "linear-gradient(135deg, #FEF2F2, #FFF7ED)",
+                                            borderRadius: "14px",
+                                            border: "1.5px solid #FECACA",
+                                        }}
+                                    >
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+                                            <span style={{ fontSize: "1.3rem" }}>⚠️</span>
+                                            <div>
+                                                <div style={{ fontWeight: 700, color: "#DC2626", fontSize: "0.9rem" }}>
+                                                    Inspection Failed
+                                                </div>
+                                                <div style={{ fontSize: "0.78rem", color: "#6B7280" }}>
+                                                    This product did not pass our quality inspection. Choose an option below.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: "flex", gap: "10px" }}>
+                                            <button
+                                                className="action-btn"
+                                                style={{
+                                                    flex: 1, padding: "10px", borderRadius: "10px",
+                                                    background: "linear-gradient(135deg, #2563EB, #1D4ED8)",
+                                                    color: "white", fontWeight: 700, fontSize: "0.82rem",
+                                                    border: "none", cursor: "pointer",
+                                                    boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
+                                                }}
+                                                onClick={() => {
+                                                    router.push(`/order/new?reorder=${encodeURIComponent(order.product_name)}&platform=${encodeURIComponent(order.platform)}&url=${encodeURIComponent(order.product_url || "")}`);
+                                                }}
+                                            >
+                                                🔄 Reorder Product
+                                            </button>
+                                            <button
+                                                className="action-btn"
+                                                style={{
+                                                    flex: 1, padding: "10px", borderRadius: "10px",
+                                                    background: "#FEE2E2", color: "#DC2626",
+                                                    fontWeight: 700, fontSize: "0.82rem",
+                                                    border: "1.5px solid #FECACA", cursor: "pointer",
+                                                }}
+                                                onClick={() => handleCancelOrder(order.id)}
+                                            >
+                                                💰 Get Refund
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {order.status !== "delivered" && order.status !== "cancelled" && order.status !== "refunded" && order.status !== "failed" && (
                                     <div style={{ marginTop: "14px", textAlign: "right" }}>
                                         <button
                                             className="btn-soft btn-small"
