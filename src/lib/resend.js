@@ -1,6 +1,14 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
+
+function getResend() {
+    if (!resend) {
+        resend = new Resend(process.env.RESEND_API_KEY);
+    }
+    return resend;
+}
+
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@shieldcart.in';
 
 export async function sendInspectionPassedEmail({ to, customerName, orderDetails, certificateBuffer }) {
@@ -12,7 +20,7 @@ export async function sendInspectionPassedEmail({ to, customerName, orderDetails
         });
     }
 
-    return resend.emails.send({
+    return getResend().emails.send({
         from: `ShieldCart <${FROM_EMAIL}>`,
         to,
         subject: `✅ Your order has passed inspection — ${orderDetails.productName}`,
@@ -72,7 +80,7 @@ export async function sendOrderUpdateEmail({ to, customerName, productName, stat
         delivered: '#5c6b3a',
     };
 
-    return resend.emails.send({
+    return getResend().emails.send({
         from: `ShieldCart <${FROM_EMAIL}>`,
         to,
         subject: `📦 Order Update: ${productName} — ${status.charAt(0).toUpperCase() + status.slice(1)}`,
@@ -103,4 +111,4 @@ export async function sendOrderUpdateEmail({ to, customerName, productName, stat
     });
 }
 
-export { resend };
+export { getResend as resend };
