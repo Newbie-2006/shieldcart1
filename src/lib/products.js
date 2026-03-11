@@ -89,17 +89,82 @@ const BRANDS = {
 const PLATFORMS_LIST = ["Amazon", "Flipkart", "Meesho", "Myntra", "Nykaa"];
 const BADGES = ["Best Seller", "Top Rated", "Premium", "Hot", "New", null, null, null, null, null];
 
-// Category colors for product image placeholders (bg/text)
-const CATEGORY_COLORS = {
-    phones: { bg: "DBEAFE", text: "1E40AF" },
-    laptops: { bg: "E0E7FF", text: "3730A3" },
-    audio: { bg: "F3E8FF", text: "6B21A8" },
-    tablets: { bg: "D1FAE5", text: "065F46" },
-    watches: { bg: "FEF3C7", text: "92400E" },
-    cameras: { bg: "FFE4E6", text: "9F1239" },
-    gaming: { bg: "EDE9FE", text: "5B21B6" },
-    appliances: { bg: "CCFBF1", text: "134E4A" },
-    beauty: { bg: "FFF1F2", text: "BE123C" },
+// Real product images from Unsplash per category
+const CATEGORY_IMAGES = {
+    phones: [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1580910051074-3eb694886f1b?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&h=400&fit=crop",
+    ],
+    laptops: [
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1525547719351-1f3e5c1e863c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop",
+    ],
+    audio: [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1590658268037-6bf12f032741?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop",
+    ],
+    tablets: [
+        "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1561154464-82e9aab32564?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1632882765546-1ee75f53becb?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=400&h=400&fit=crop",
+    ],
+    watches: [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1546868871-af0de0e3975e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400&h=400&fit=crop",
+    ],
+    cameras: [
+        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1502920917128-1aa500764bed?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1617005082133-0c9768c78e22?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1495707902641-75cac588d2e9?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1581591524425-c7e0978865fc?w=400&h=400&fit=crop",
+    ],
+    gaming: [
+        "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1625805866449-3589be0adcea?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=400&h=400&fit=crop",
+    ],
+    appliances: [
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&h=400&fit=crop",
+    ],
+    beauty: [
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400&h=400&fit=crop",
+    ],
 };
 
 // Generate REAL search URLs for each platform
@@ -136,7 +201,7 @@ export function generateProducts() {
 
     for (const category of categories) {
         const brandList = BRANDS[category];
-        const colors = CATEGORY_COLORS[category] || CATEGORY_COLORS.phones;
+        const images = CATEGORY_IMAGES[category] || CATEGORY_IMAGES.phones;
 
         for (const { brand, models, priceRange } of brandList) {
             // Determine which platforms this brand appears on
@@ -175,9 +240,8 @@ export function generateProducts() {
                 // Verified
                 const verified = seededRandom(seed + 5) > 0.35;
 
-                // Image — branded placeholder with category colors
-                const imgText = encodeURIComponent(`${brand}\n${model}`);
-                const imageUrl = `https://placehold.co/400x400/${colors.bg}/${colors.text}?text=${imgText}&font=inter`;
+                // Image — cycle through category-specific Unsplash photos
+                const imageUrl = images[(id + mi) % images.length];
 
                 products.push({
                     id: id++,
