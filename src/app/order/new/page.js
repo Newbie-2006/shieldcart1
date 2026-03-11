@@ -76,65 +76,85 @@ function NewOrderForm() {
 
         try {
             const totalAmount = (Number(form.price) || 0) + fee;
+            const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            const isTestMode = !razorpayKey || razorpayKey === "rzp_test_placeholder" || razorpayKey.includes("placeholder");
 
-            // Create Razorpay order
-            const orderRes = await fetch("/api/payment/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: totalAmount }),
-            });
-            const orderData = await orderRes.json();
-            if (!orderRes.ok) throw new Error(orderData.error);
+            if (isTestMode) {
+                // ── SIMULATED PAYMENT (no Razorpay keys) ──
+                const confirmed = window.confirm(
+                    `💳 Payment Simulation\n\nProduct: ${form.product_name}\nAmount: ₹${totalAmount.toLocaleString("en-IN")}\n\nClick OK to simulate successful payment.`
+                );
+                if (!confirmed) { setLoading(false); return; }
 
-            // Load Razorpay
-            const loaded = await loadRazorpayScript();
-            if (!loaded) throw new Error("Razorpay SDK failed to load");
+                const res = await fetch("/api/orders", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        ...form,
+                        price: Number(form.price),
+                        shieldcart_fee: fee,
+                        razorpay_order_id: `sim_${Date.now()}`,
+                        test_mode: true,
+                    }),
+                });
+                if (res.ok) {
+                    router.push("/dashboard");
+                } else {
+                    const err = await res.json();
+                    alert(err.error || "Failed to create order");
+                }
+            } else {
+                // ── REAL RAZORPAY PAYMENT ──
+                const orderRes = await fetch("/api/payment/create-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: totalAmount }),
+                });
+                const orderData = await orderRes.json();
+                if (!orderRes.ok) throw new Error(orderData.error);
 
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: orderData.amount,
-                currency: orderData.currency,
-                name: "ShieldCart",
-                description: `Inspection for ${form.product_name}`,
-                order_id: orderData.id,
-                handler: async function (response) {
-                    // Payment successful — create order
-                    try {
-                        const res = await fetch("/api/orders", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                ...form,
-                                price: Number(form.price),
-                                shieldcart_fee: fee,
-                                razorpay_order_id: orderData.id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                            }),
-                        });
-                        if (res.ok) {
-                            router.push("/dashboard");
-                        } else {
-                            const err = await res.json();
-                            alert(err.error || "Failed to create order");
+                const loaded = await loadRazorpayScript();
+                if (!loaded) throw new Error("Razorpay SDK failed to load");
+
+                const options = {
+                    key: razorpayKey,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: "ShieldCart",
+                    description: `Inspection for ${form.product_name}`,
+                    order_id: orderData.id,
+                    handler: async function (response) {
+                        try {
+                            const res = await fetch("/api/orders", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    ...form,
+                                    price: Number(form.price),
+                                    shieldcart_fee: fee,
+                                    razorpay_order_id: orderData.id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                }),
+                            });
+                            if (res.ok) {
+                                router.push("/dashboard");
+                            } else {
+                                const err = await res.json();
+                                alert(err.error || "Failed to create order");
+                            }
+                        } catch (err) {
+                            alert("Error creating order: " + err.message);
                         }
-                    } catch (err) {
-                        alert("Error creating order: " + err.message);
-                    }
-                },
-                prefill: {
-                    email: user?.email || "",
-                },
-                theme: {
-                    color: "#2563EB",
-                },
-                modal: {
-                    ondismiss: () => setLoading(false),
-                },
-            };
+                    },
+                    prefill: { email: user?.email || "" },
+                    theme: { color: "#2563EB" },
+                    modal: { ondismiss: () => setLoading(false) },
+                };
 
-            const rzp = new window.Razorpay(options);
-            rzp.open();
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            }
         } catch (err) {
             alert(err.message);
         } finally {
