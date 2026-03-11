@@ -89,10 +89,14 @@ export default function AdminPage() {
 
     const handleAssignInspector = async () => {
         if (!assignModal || !selectedInspector) return;
+        const isDummyAgent = selectedInspector.startsWith("agent-");
+        const payload = isDummyAgent
+            ? { status: "arrived" }
+            : { inspector_id: selectedInspector, status: "arrived" };
         await fetch(`/api/orders/${assignModal}/status`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ inspector_id: selectedInspector, status: "arrived" }),
+            body: JSON.stringify(payload),
         });
         await fetchOrders();
         setAssignModal(null);
@@ -641,6 +645,16 @@ export default function AdminPage() {
                                 {inspectors.map((insp) => (
                                     <option key={insp.id} value={insp.id}>{insp.full_name}</option>
                                 ))}
+                                {inspectors.length === 0 && (
+                                    <>
+                                        <option value="agent-rahul">Rahul Sharma</option>
+                                        <option value="agent-priya">Priya Patel</option>
+                                        <option value="agent-arjun">Arjun Mehta</option>
+                                        <option value="agent-sneha">Sneha Reddy</option>
+                                        <option value="agent-vikram">Vikram Singh</option>
+                                        <option value="agent-ananya">Ananya Gupta</option>
+                                    </>
+                                )}
                             </select>
                             <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
                                 <button className="btn-soft btn-small" onClick={() => setAssignModal(null)}>Cancel</button>

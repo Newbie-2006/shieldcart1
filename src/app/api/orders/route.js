@@ -70,7 +70,7 @@ export async function POST(request) {
             shieldcart_fee,
             delivery_address,
             razorpay_order_id,
-            payment_status: "paid",
+            payment_status: body.payment_status || "paid",
             status: "ordered",
         }).select().single();
 

@@ -22,6 +22,7 @@ function NewOrderForm() {
     const [user, setUser] = useState(null);
     const [hasSubscription, setHasSubscription] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState("online"); // "online" or "cod"
     const initialPlatform = searchParams.get("platform") || "Amazon";
     const [form, setForm] = useState({
         product_url: searchParams.get("product_url") || "",
@@ -70,90 +71,87 @@ function NewOrderForm() {
         });
     };
 
+    const createOrder = async (paymentData) => {
+        const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                ...form,
+                price: Number(form.price),
+                shieldcart_fee: fee,
+                ...paymentData,
+            }),
+        });
+        if (res.ok) {
+            router.push("/dashboard");
+        } else {
+            const err = await res.json();
+            alert(err.error || "Failed to create order");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
             const totalAmount = (Number(form.price) || 0) + fee;
-            const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-            const isTestMode = !razorpayKey || razorpayKey === "rzp_test_placeholder" || razorpayKey.includes("placeholder");
 
-            if (isTestMode) {
-                // ── SIMULATED PAYMENT (no Razorpay keys) ──
-                const confirmed = window.confirm(
-                    `💳 Payment Simulation\n\nProduct: ${form.product_name}\nAmount: ₹${totalAmount.toLocaleString("en-IN")}\n\nClick OK to simulate successful payment.`
-                );
-                if (!confirmed) { setLoading(false); return; }
+            if (paymentMethod === "cod") {
+                // ── CASH ON DELIVERY ──
+                await createOrder({
+                    razorpay_order_id: `cod_${Date.now()}`,
+                    payment_status: "cod",
+                    test_mode: true,
+                });
+            } else {
+                // ── ONLINE PAYMENT ──
+                const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+                const isTestMode = !razorpayKey || razorpayKey === "rzp_test_placeholder" || razorpayKey.includes("placeholder");
 
-                const res = await fetch("/api/orders", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        ...form,
-                        price: Number(form.price),
-                        shieldcart_fee: fee,
+                if (isTestMode) {
+                    const confirmed = window.confirm(
+                        `💳 Payment Simulation\n\nProduct: ${form.product_name}\nAmount: ₹${totalAmount.toLocaleString("en-IN")}\n\nClick OK to simulate successful payment.`
+                    );
+                    if (!confirmed) { setLoading(false); return; }
+                    await createOrder({
                         razorpay_order_id: `sim_${Date.now()}`,
                         test_mode: true,
-                    }),
-                });
-                if (res.ok) {
-                    router.push("/dashboard");
+                    });
                 } else {
-                    const err = await res.json();
-                    alert(err.error || "Failed to create order");
-                }
-            } else {
-                // ── REAL RAZORPAY PAYMENT ──
-                const orderRes = await fetch("/api/payment/create-order", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount: totalAmount }),
-                });
-                const orderData = await orderRes.json();
-                if (!orderRes.ok) throw new Error(orderData.error);
+                    const orderRes = await fetch("/api/payment/create-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ amount: totalAmount }),
+                    });
+                    const orderData = await orderRes.json();
+                    if (!orderRes.ok) throw new Error(orderData.error);
 
-                const loaded = await loadRazorpayScript();
-                if (!loaded) throw new Error("Razorpay SDK failed to load");
+                    const loaded = await loadRazorpayScript();
+                    if (!loaded) throw new Error("Razorpay SDK failed to load");
 
-                const options = {
-                    key: razorpayKey,
-                    amount: orderData.amount,
-                    currency: orderData.currency,
-                    name: "ShieldCart",
-                    description: `Inspection for ${form.product_name}`,
-                    order_id: orderData.id,
-                    handler: async function (response) {
-                        try {
-                            const res = await fetch("/api/orders", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    ...form,
-                                    price: Number(form.price),
-                                    shieldcart_fee: fee,
-                                    razorpay_order_id: orderData.id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                }),
+                    const options = {
+                        key: razorpayKey,
+                        amount: orderData.amount,
+                        currency: orderData.currency,
+                        name: "ShieldCart",
+                        description: `Inspection for ${form.product_name}`,
+                        order_id: orderData.id,
+                        handler: async (response) => {
+                            await createOrder({
+                                razorpay_order_id: orderData.id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
                             });
-                            if (res.ok) {
-                                router.push("/dashboard");
-                            } else {
-                                const err = await res.json();
-                                alert(err.error || "Failed to create order");
-                            }
-                        } catch (err) {
-                            alert("Error creating order: " + err.message);
-                        }
-                    },
-                    prefill: { email: user?.email || "" },
-                    theme: { color: "#2563EB" },
-                    modal: { ondismiss: () => setLoading(false) },
-                };
+                        },
+                        prefill: { email: user?.email || "" },
+                        theme: { color: "#2563EB" },
+                        modal: { ondismiss: () => setLoading(false) },
+                    };
 
-                const rzp = new window.Razorpay(options);
-                rzp.open();
+                    const rzp = new window.Razorpay(options);
+                    rzp.open();
+                }
             }
         } catch (err) {
             alert(err.message);
@@ -365,6 +363,45 @@ function NewOrderForm() {
                             </div>
                         </div>
 
+                        {/* Payment Method */}
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--bark)", display: "block", marginBottom: "10px" }}>
+                                Payment Method
+                            </label>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod("online")}
+                                    style={{
+                                        flex: 1, padding: "14px 16px", borderRadius: "12px",
+                                        border: paymentMethod === "online" ? "2px solid #2563EB" : "2px solid #E5E7EB",
+                                        background: paymentMethod === "online" ? "#EFF6FF" : "white",
+                                        cursor: "pointer", textAlign: "center",
+                                        transition: "all 0.2s",
+                                    }}
+                                >
+                                    <div style={{ fontSize: "1.3rem", marginBottom: "4px" }}>💳</div>
+                                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: paymentMethod === "online" ? "#2563EB" : "#374151" }}>Pay Online</div>
+                                    <div style={{ fontSize: "0.7rem", color: "#9CA3AF", marginTop: "2px" }}>UPI / Card / Netbanking</div>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod("cod")}
+                                    style={{
+                                        flex: 1, padding: "14px 16px", borderRadius: "12px",
+                                        border: paymentMethod === "cod" ? "2px solid #10B981" : "2px solid #E5E7EB",
+                                        background: paymentMethod === "cod" ? "#ECFDF5" : "white",
+                                        cursor: "pointer", textAlign: "center",
+                                        transition: "all 0.2s",
+                                    }}
+                                >
+                                    <div style={{ fontSize: "1.3rem", marginBottom: "4px" }}>🏠</div>
+                                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: paymentMethod === "cod" ? "#059669" : "#374151" }}>Cash on Delivery</div>
+                                    <div style={{ fontSize: "0.7rem", color: "#9CA3AF", marginTop: "2px" }}>Pay when you receive</div>
+                                </button>
+                            </div>
+                        </div>
+
                         <button
                             type="submit"
                             className="btn-olive"
@@ -375,10 +412,14 @@ function NewOrderForm() {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 gap: "8px",
+                                background: paymentMethod === "cod" ? "linear-gradient(135deg, #10B981, #059669)" : undefined,
                             }}
                         >
                             {loading && <span className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} />}
-                            {loading ? "Processing..." : `Pay ₹${((Number(form.price) || 0) + fee).toLocaleString("en-IN")} & Place Order`}
+                            {loading ? "Processing..." : paymentMethod === "cod"
+                                ? `Place Order — ₹${((Number(form.price) || 0) + fee).toLocaleString("en-IN")} (COD)`
+                                : `Pay ₹${((Number(form.price) || 0) + fee).toLocaleString("en-IN")} & Place Order`
+                            }
                         </button>
                     </form>
                 </div>

@@ -9,8 +9,9 @@ export async function PATCH(request, { params }) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Check role
-        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+        // Check role using service client to avoid RLS issues
+        const serviceSupabase = await createServiceClient();
+        const { data: profile } = await serviceSupabase.from("profiles").select("role").eq("id", user.id).single();
         if (profile?.role !== "inspector" && profile?.role !== "admin") {
             return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
         }
@@ -22,7 +23,6 @@ export async function PATCH(request, { params }) {
         if (body.status) updateData.status = body.status;
         if (body.inspector_id) updateData.inspector_id = body.inspector_id;
 
-        const serviceSupabase = await createServiceClient();
         const { data, error } = await serviceSupabase
             .from("orders")
             .update(updateData)
