@@ -105,14 +105,23 @@ export default function AdminPage() {
 
     const handleUpdateStatus = async () => {
         if (!statusModal || !newStatus) return;
-        await fetch(`/api/orders/${statusModal}/status`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus }),
-        });
-        await fetchOrders();
-        setStatusModal(null);
-        setNewStatus("");
+        try {
+            const res = await fetch(`/api/orders/${statusModal}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                alert(`Failed to update status: ${data.error || 'Unknown error'}`);
+                return;
+            }
+            await fetchAll();
+            setStatusModal(null);
+            setNewStatus("");
+        } catch (err) {
+            alert("Error updating status: " + err.message);
+        }
     };
 
     const handleRefund = async (orderId) => {
