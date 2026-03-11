@@ -10,19 +10,19 @@ export async function generateCertificate({ orderId, productName, platform, insp
     const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
 
-    // Colors matching ShieldCart palette
-    const olive = rgb(0.36, 0.42, 0.23);    // #5c6b3a
-    const bark = rgb(0.23, 0.18, 0.12);     // #3b2f1e
-    const burnt = rgb(0.60, 0.49, 0.25);    // #9a7c3f
-    const stone = rgb(0.48, 0.43, 0.38);    // #7a6e62
-    const sandBg = rgb(0.95, 0.93, 0.89);   // #f2ece2
-    const olivePale = rgb(0.93, 0.94, 0.90);// #edf0e6
+    // Colors matching ShieldCart blue palette
+    const olive = rgb(0.15, 0.39, 0.92);    // #2563EB (primary blue)
+    const bark = rgb(0.07, 0.09, 0.15);     // #111827 (gray-900)
+    const burnt = rgb(0.96, 0.62, 0.04);    // #F59E0B (warning)
+    const stone = rgb(0.42, 0.45, 0.49);    // #6B7280 (gray-500)
+    const sandBg = rgb(0.95, 0.96, 0.96);   // #F3F4F6 (gray-100)
+    const olivePale = rgb(0.94, 0.96, 1.0); // #EFF6FF (primary-pale)
     const white = rgb(1, 1, 1);
 
     // Background
     page.drawRectangle({
         x: 0, y: 0, width, height,
-        color: rgb(0.98, 0.97, 0.95), // canvas
+        color: rgb(0.98, 0.98, 0.99), // gray-50
     });
 
     // Top border bar

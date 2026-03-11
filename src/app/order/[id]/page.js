@@ -124,7 +124,7 @@ export default function OrderDetailPage() {
                         <div>
                             <h1
                                 style={{
-                                    fontFamily: "'Lora', serif",
+                                    fontFamily: "'Plus Jakarta Sans', sans-serif",
                                     fontSize: "1.5rem",
                                     fontWeight: 500,
                                     color: "var(--bark)",

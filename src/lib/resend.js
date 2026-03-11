@@ -25,20 +25,20 @@ export async function sendInspectionPassedEmail({ to, customerName, orderDetails
         to,
         subject: `✅ Your order has passed inspection — ${orderDetails.productName}`,
         html: `
-      <div style="font-family: 'Manrope', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #faf7f2; padding: 40px; border-radius: 16px;">
+      <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #F9FAFB; padding: 40px; border-radius: 16px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <h1 style="font-family: Georgia, serif; color: #3b2f1e; font-size: 24px; margin: 0;">
-            Shield<span style="color: #5c6b3a;">Cart</span>
+          <h1 style="font-family: Georgia, serif; color: #111827; font-size: 24px; margin: 0;">
+            Shield<span style="color: #2563EB;">Cart</span>
           </h1>
         </div>
-        <div style="background: #fff; border: 1px solid #ddd0bc; border-radius: 16px; padding: 32px;">
+        <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 32px;">
           <h2 style="color: #5c6b3a; font-size: 18px; margin: 0 0 8px;">✅ Inspection Passed</h2>
           <p style="color: #7a6e62; font-size: 14px; line-height: 1.6; margin: 0 0 20px;">
             Hi ${customerName},<br><br>
             Great news! Your order <strong>${orderDetails.productName}</strong> from <strong>${orderDetails.platform}</strong> has passed our physical inspection and is on its way to you.
           </p>
           <div style="background: #edf0e6; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-            <p style="font-size: 13px; color: #4a5630; margin: 0;">
+            <p style="font-size: 13px; color: #1D4ED8; margin: 0;">
               <strong>Order ID:</strong> ${orderDetails.orderId}<br>
               <strong>Product:</strong> ${orderDetails.productName}<br>
               <strong>Platform:</strong> ${orderDetails.platform}<br>

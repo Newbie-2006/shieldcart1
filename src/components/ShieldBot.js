@@ -106,19 +106,19 @@ export default function ShieldBot() {
                     width: 60px;
                     height: 60px;
                     border-radius: 50%;
-                    background: linear-gradient(135deg, #5c6b3a 0%, #4a5630 100%);
+                    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
                     border: none;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-size: 1.6rem;
-                    box-shadow: 0 6px 28px rgba(92,107,58,0.4), 0 2px 8px rgba(0,0,0,0.12);
+                    box-shadow: 0 6px 28px rgba(37,99,235,0.4), 0 2px 8px rgba(0,0,0,0.12);
                     animation: sb-float 3s ease-in-out infinite;
                     transition: box-shadow 0.3s;
                 }
                 .sb-fab:hover {
-                    box-shadow: 0 8px 36px rgba(92,107,58,0.55), 0 2px 12px rgba(0,0,0,0.18);
+                    box-shadow: 0 8px 36px rgba(37,99,235,0.55), 0 2px 12px rgba(0,0,0,0.18);
                 }
                 .sb-window {
                     position: fixed;
@@ -127,18 +127,18 @@ export default function ShieldBot() {
                     z-index: 10000;
                     width: 400px;
                     height: 600px;
-                    background: #faf7f2;
+                    background: #FFFFFF;
                     border-radius: 24px;
-                    border: 1px solid #ddd0bc;
-                    box-shadow: 0 20px 60px rgba(59,47,30,0.2), 0 4px 16px rgba(0,0,0,0.08);
+                    border: 1px solid rgba(0,0,0,0.08);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
                     display: flex;
                     flex-direction: column;
                     overflow: hidden;
                     animation: sb-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-                    font-family: 'Manrope', sans-serif;
+                    font-family: 'Inter', sans-serif;
                 }
                 .sb-header {
-                    background: linear-gradient(135deg, #5c6b3a 0%, #4a5630 100%);
+                    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
                     padding: 18px 20px;
                     display: flex;
                     align-items: center;
@@ -201,7 +201,7 @@ export default function ShieldBot() {
                 }
                 .sb-messages::-webkit-scrollbar { width: 5px; }
                 .sb-messages::-webkit-scrollbar-track { background: transparent; }
-                .sb-messages::-webkit-scrollbar-thumb { background: #c8d4a8; border-radius: 3px; }
+                .sb-messages::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
                 .sb-msg {
                     max-width: 85%;
                     padding: 12px 16px;
@@ -213,15 +213,15 @@ export default function ShieldBot() {
                 }
                 .sb-msg-user {
                     align-self: flex-end;
-                    background: #5c6b3a;
-                    color: #fefcf9;
+                    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+                    color: #FFFFFF;
                     border-bottom-right-radius: 6px;
                 }
                 .sb-msg-bot {
                     align-self: flex-start;
-                    background: #fefcf9;
-                    color: #3b2f1e;
-                    border: 1px solid #e8dece;
+                    background: #F3F4F6;
+                    color: #111827;
+                    border: 1px solid #E5E7EB;
                     border-bottom-left-radius: 6px;
                 }
                 .sb-welcome {
@@ -233,14 +233,14 @@ export default function ShieldBot() {
                     margin-bottom: 8px;
                 }
                 .sb-welcome h4 {
-                    font-family: 'Lora', serif;
-                    color: #3b2f1e;
+                    font-family: 'Plus Jakarta Sans', sans-serif;
+                    color: #111827;
                     font-size: 1.15rem;
                     font-weight: 500;
                     margin: 0 0 4px;
                 }
                 .sb-welcome p {
-                    color: #7a6e62;
+                    color: #6B7280;
                     font-size: 0.82rem;
                     margin: 0;
                     font-weight: 400;
@@ -253,21 +253,21 @@ export default function ShieldBot() {
                     justify-content: center;
                 }
                 .sb-chip {
-                    background: #fefcf9;
-                    border: 1.5px solid #c8d4a8;
+                    background: #FFFFFF;
+                    border: 1.5px solid #D1D5DB;
                     border-radius: 100px;
                     padding: 8px 14px;
                     font-size: 0.75rem;
                     font-weight: 600;
-                    color: #4a5630;
+                    color: #2563EB;
                     cursor: pointer;
-                    font-family: 'Manrope', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     transition: background 0.2s, border-color 0.2s, transform 0.2s;
                     white-space: nowrap;
                 }
                 .sb-chip:hover {
-                    background: #edf0e6;
-                    border-color: #5c6b3a;
+                    background: #EFF6FF;
+                    border-color: #2563EB;
                     transform: translateY(-1px);
                 }
                 .sb-typing {
@@ -276,15 +276,15 @@ export default function ShieldBot() {
                     gap: 5px;
                     padding: 12px 16px;
                     align-self: flex-start;
-                    background: #fefcf9;
-                    border: 1px solid #e8dece;
+                    background: #F3F4F6;
+                    border: 1px solid #E5E7EB;
                     border-radius: 18px;
                     border-bottom-left-radius: 6px;
                 }
                 .sb-dot {
                     width: 7px;
                     height: 7px;
-                    background: #5c6b3a;
+                    background: #2563EB;
                     border-radius: 50%;
                     opacity: 0.5;
                     animation: sb-dot-bounce 1.4s ease-in-out infinite;
@@ -293,8 +293,8 @@ export default function ShieldBot() {
                 .sb-dot:nth-child(3) { animation-delay: 0.32s; }
                 .sb-input-area {
                     padding: 12px 14px;
-                    border-top: 1px solid #e8dece;
-                    background: #fefcf9;
+                    border-top: 1px solid #E5E7EB;
+                    background: #FFFFFF;
                     display: flex;
                     gap: 10px;
                     align-items: flex-end;
@@ -302,13 +302,13 @@ export default function ShieldBot() {
                 }
                 .sb-textarea {
                     flex: 1;
-                    border: 1.5px solid #ddd0bc;
+                    border: 1.5px solid #E5E7EB;
                     border-radius: 14px;
                     padding: 10px 14px;
                     font-size: 0.85rem;
-                    font-family: 'Manrope', sans-serif;
-                    color: #3b2f1e;
-                    background: #faf7f2;
+                    font-family: 'Inter', sans-serif;
+                    color: #111827;
+                    background: #F9FAFB;
                     resize: none;
                     outline: none;
                     max-height: 80px;
@@ -316,17 +316,17 @@ export default function ShieldBot() {
                     transition: border-color 0.2s;
                 }
                 .sb-textarea:focus {
-                    border-color: #5c6b3a;
-                    box-shadow: 0 0 0 3px rgba(92,107,58,0.1);
+                    border-color: #2563EB;
+                    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
                 }
-                .sb-textarea::placeholder { color: #a09488; }
+                .sb-textarea::placeholder { color: #9CA3AF; }
                 .sb-send {
                     width: 40px;
                     height: 40px;
                     border-radius: 12px;
                     border: none;
-                    background: #5c6b3a;
-                    color: #fefcf9;
+                    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+                    color: #FFFFFF;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
@@ -335,16 +335,16 @@ export default function ShieldBot() {
                     flex-shrink: 0;
                     transition: background 0.2s, transform 0.2s;
                 }
-                .sb-send:hover { background: #4a5630; transform: translateY(-1px); }
+                .sb-send:hover { background: #1D4ED8; transform: translateY(-1px); }
                 .sb-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
                 .sb-trust {
                     padding: 10px 16px;
-                    background: #edf0e6;
-                    border-top: 1px solid #c8d4a8;
+                    background: #EFF6FF;
+                    border-top: 1px solid #D1D5DB;
                     text-align: center;
                     font-size: 0.68rem;
                     font-weight: 600;
-                    color: #4a5630;
+                    color: #1D4ED8;
                     letter-spacing: 0.02em;
                     flex-shrink: 0;
                 }
@@ -407,7 +407,7 @@ export default function ShieldBot() {
                                 <div className="sb-welcome-icon">🛡️</div>
                                 <h4>
                                     Hey! I&apos;m{" "}
-                                    <span style={{ color: "#5c6b3a" }}>ShieldBot</span>
+                                    <span style={{ color: "#2563EB" }}>ShieldBot</span>
                                 </h4>
                                 <p>
                                     Your AI shopping assistant. Ask me about products,

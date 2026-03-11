@@ -1,113 +1,102 @@
 "use client";
 
-const STATUSES = ["ordered", "arrived", "inspecting", "passed", "dispatched", "delivered"];
-const STATUS_LABELS = {
-    ordered: "Ordered",
-    arrived: "Arrived",
-    inspecting: "Inspecting",
-    passed: "Verified",
-    failed: "Failed",
-    dispatched: "Dispatched",
-    delivered: "Delivered",
-};
+const STEPS = [
+  { key: "ordered", label: "Ordered", icon: "📦" },
+  { key: "arrived_at_hub", label: "At Hub", icon: "🏢" },
+  { key: "inspecting", label: "Inspecting", icon: "🔍" },
+  { key: "passed", label: "Verified", icon: "✅" },
+  { key: "dispatched", label: "Dispatched", icon: "🚚" },
+  { key: "delivered", label: "Delivered", icon: "🏠" },
+];
 
 export default function StatusBar({ status }) {
-    const isFailed = status === "failed";
-    const currentIndex = STATUSES.indexOf(status);
+  const currentIdx = STEPS.findIndex((s) => s.key === status);
 
-    return (
-        <div style={{ width: "100%", marginTop: "12px" }}>
+  return (
+    <div style={{ position: "relative", padding: "16px 0" }}>
+      {/* Progress Line */}
+      <div
+        style={{
+          position: "absolute",
+          top: "32px",
+          left: "24px",
+          right: "24px",
+          height: "4px",
+          background: "#E5E7EB",
+          borderRadius: "4px",
+          zIndex: 0,
+        }}
+      >
+        <div
+          style={{
+            width: `${Math.max(0, (currentIdx / (STEPS.length - 1)) * 100)}%`,
+            height: "100%",
+            background: "linear-gradient(90deg, #2563EB, #10B981)",
+            borderRadius: "4px",
+            transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        />
+      </div>
+
+      {/* Steps */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {STEPS.map((step, i) => {
+          const done = i <= currentIdx;
+          const active = i === currentIdx;
+          return (
             <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0",
-                    position: "relative",
-                }}
+              key={step.key}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px",
+                flex: 1,
+              }}
             >
-                {STATUSES.map((s, i) => {
-                    const isActive = i <= currentIndex && !isFailed;
-                    const isCurrent = s === status;
-
-                    return (
-                        <div
-                            key={s}
-                            style={{
-                                flex: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                position: "relative",
-                            }}
-                        >
-                            {/* Connector line */}
-                            {i > 0 && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: "12px",
-                                        left: "-50%",
-                                        right: "50%",
-                                        height: "3px",
-                                        background: isActive ? "var(--olive)" : "var(--sand3)",
-                                        transition: "background 0.5s ease",
-                                        zIndex: 0,
-                                    }}
-                                />
-                            )}
-
-                            {/* Dot */}
-                            <div
-                                style={{
-                                    width: "24px",
-                                    height: "24px",
-                                    borderRadius: "50%",
-                                    background: isFailed && isCurrent
-                                        ? "#c04040"
-                                        : isActive
-                                            ? "var(--olive)"
-                                            : "var(--sand2)",
-                                    border: isCurrent
-                                        ? isFailed
-                                            ? "3px solid #fde8e8"
-                                            : "3px solid var(--olive-mid)"
-                                        : "3px solid transparent",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    position: "relative",
-                                    zIndex: 1,
-                                    transition: "all 0.3s ease",
-                                    animation: isCurrent && !isFailed ? "pulse 2s infinite" : "none",
-                                }}
-                            >
-                                {isActive && (
-                                    <span style={{ color: "#fff", fontSize: "0.65rem", fontWeight: 800 }}>✓</span>
-                                )}
-                                {isFailed && isCurrent && (
-                                    <span style={{ color: "#fff", fontSize: "0.65rem", fontWeight: 800 }}>✗</span>
-                                )}
-                            </div>
-
-                            {/* Label */}
-                            <span
-                                style={{
-                                    fontSize: "0.62rem",
-                                    fontWeight: isCurrent ? 700 : 500,
-                                    color: isFailed && isCurrent ? "#c04040" : isActive ? "var(--olive2)" : "var(--stone2)",
-                                    marginTop: "6px",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.06em",
-                                    textAlign: "center",
-                                    whiteSpace: "nowrap",
-                                }}
-                            >
-                                {STATUS_LABELS[s]}
-                            </span>
-                        </div>
-                    );
-                })}
+              <div
+                style={{
+                  width: active ? "38px" : "32px",
+                  height: active ? "38px" : "32px",
+                  borderRadius: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: active ? "1rem" : "0.85rem",
+                  background: done
+                    ? active
+                      ? "linear-gradient(135deg, #2563EB, #10B981)"
+                      : "#EFF6FF"
+                    : "#F3F4F6",
+                  border: done ? "2px solid transparent" : "2px solid #E5E7EB",
+                  boxShadow: active ? "0 4px 12px rgba(37,99,235,0.3)" : "none",
+                  transition: "all 0.3s",
+                }}
+              >
+                {done ? (active ? step.icon : "✓") : step.icon}
+              </div>
+              <span
+                style={{
+                  fontSize: "0.68rem",
+                  fontWeight: done ? 600 : 500,
+                  color: done ? (active ? "#2563EB" : "#374151") : "#9CA3AF",
+                  whiteSpace: "nowrap",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {step.label}
+              </span>
             </div>
-        </div>
-    );
+          );
+        })}
+      </div>
+    </div>
+  );
 }

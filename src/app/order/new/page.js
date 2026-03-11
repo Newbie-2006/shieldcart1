@@ -24,10 +24,10 @@ function NewOrderForm() {
     const [loading, setLoading] = useState(false);
     const initialPlatform = searchParams.get("platform") || "Amazon";
     const [form, setForm] = useState({
-        product_url: "",
-        product_name: "",
+        product_url: searchParams.get("product_url") || "",
+        product_name: searchParams.get("product_name") || "",
         platform: PLATFORMS.includes(initialPlatform) ? initialPlatform : "Amazon",
-        price: "",
+        price: searchParams.get("price") || "",
         delivery_address: "",
     });
 
@@ -126,7 +126,7 @@ function NewOrderForm() {
                     email: user?.email || "",
                 },
                 theme: {
-                    color: "#5c6b3a",
+                    color: "#2563EB",
                 },
                 modal: {
                     ondismiss: () => setLoading(false),
@@ -171,7 +171,7 @@ function NewOrderForm() {
 
                 <h1
                     style={{
-                        fontFamily: "'Lora', serif",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
                         fontSize: "1.8rem",
                         fontWeight: 500,
                         color: "var(--bark)",

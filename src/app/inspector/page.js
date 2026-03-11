@@ -231,7 +231,7 @@ export default function InspectorPage() {
         <div style={{ minHeight: "100vh", background: "var(--canvas)" }}>
             <Navbar />
             <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "110px 24px 60px" }}>
-                <h1 style={{ fontFamily: "'Lora', serif", fontSize: "2rem", fontWeight: 500, color: "var(--bark)", marginBottom: "8px" }}>
+                <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "2rem", fontWeight: 500, color: "var(--bark)", marginBottom: "8px" }}>
                     Inspector <em style={{ color: "var(--olive)" }}>Dashboard</em>
                 </h1>
                 <p style={{ color: "var(--stone)", fontSize: "0.9rem", marginBottom: "32px" }}>
@@ -266,7 +266,7 @@ export default function InspectorPage() {
                                 fontWeight: activeTab === tab.key ? 700 : 500,
                                 fontSize: "0.85rem",
                                 cursor: "pointer",
-                                fontFamily: "'Manrope', sans-serif",
+                                fontFamily: "'Inter', sans-serif",
                                 boxShadow: activeTab === tab.key ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
                                 transition: "all 0.2s",
                             }}

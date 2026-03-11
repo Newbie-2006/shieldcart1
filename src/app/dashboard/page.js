@@ -127,7 +127,7 @@ export default function DashboardPage() {
                     <div>
                         <h1
                             style={{
-                                fontFamily: "'Lora', serif",
+                                fontFamily: "'Plus Jakarta Sans', sans-serif",
                                 fontSize: "2rem",
                                 fontWeight: 500,
                                 color: "var(--bark)",
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                         }}
                     >
                         <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🛒</div>
-                        <h3 style={{ fontFamily: "'Lora', serif", fontSize: "1.3rem", color: "var(--bark)", marginBottom: "8px" }}>
+                        <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1.3rem", color: "var(--bark)", marginBottom: "8px" }}>
                             No orders yet
                         </h3>
                         <p style={{ color: "var(--stone)", fontSize: "0.9rem", marginBottom: "24px" }}>
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                                     <div style={{ textAlign: "right" }}>
                                         <span
                                             style={{
-                                                fontFamily: "'Lora', serif",
+                                                fontFamily: "'Plus Jakarta Sans', sans-serif",
                                                 fontSize: "1.2rem",
                                                 fontWeight: 500,
                                                 color: "var(--olive2)",
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: "rgba(59,47,30,0.6)",
+                        background: "rgba(15,23,42,0.5)",
                         zIndex: 500,
                         display: "flex",
                         alignItems: "center",
@@ -304,13 +304,13 @@ export default function DashboardPage() {
                             padding: "36px",
                             maxWidth: "480px",
                             width: "100%",
-                            boxShadow: "0 20px 60px rgba(59,47,30,0.2)",
+                            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <h3
                             style={{
-                                fontFamily: "'Lora', serif",
+                                fontFamily: "'Plus Jakarta Sans', sans-serif",
                                 fontSize: "1.3rem",
                                 color: "var(--bark)",
                                 marginBottom: "8px",
