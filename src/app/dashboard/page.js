@@ -259,6 +259,41 @@ export default function DashboardPage() {
 
                                 <StatusBar status={order.status} />
 
+                                {/* Inspector & Payment info */}
+                                <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
+                                    {order.inspector_id && (
+                                        <span style={{
+                                            fontSize: "0.75rem", fontWeight: 600,
+                                            background: "#ECFDF5", color: "#059669",
+                                            padding: "4px 10px", borderRadius: "8px",
+                                            display: "inline-flex", alignItems: "center", gap: "4px",
+                                        }}>
+                                            👤 Agent: {
+                                                order.inspector_id.startsWith("agent-")
+                                                    ? {
+                                                        "agent-rahul": "Rahul Sharma",
+                                                        "agent-priya": "Priya Patel",
+                                                        "agent-arjun": "Arjun Mehta",
+                                                        "agent-sneha": "Sneha Reddy",
+                                                        "agent-vikram": "Vikram Singh",
+                                                        "agent-ananya": "Ananya Gupta",
+                                                    }[order.inspector_id] || "Assigned"
+                                                    : "Assigned"
+                                            }
+                                        </span>
+                                    )}
+                                    {order.payment_status && (
+                                        <span style={{
+                                            fontSize: "0.75rem", fontWeight: 600,
+                                            background: order.payment_status === "refunded" ? "#FEF2F2" : order.payment_status === "cod" ? "#FFF7ED" : "#EFF6FF",
+                                            color: order.payment_status === "refunded" ? "#DC2626" : order.payment_status === "cod" ? "#C2410C" : "#2563EB",
+                                            padding: "4px 10px", borderRadius: "8px",
+                                        }}>
+                                            {order.payment_status === "cod" ? "💵 COD" : order.payment_status === "refunded" ? "↩️ Refunded" : "💳 Paid"}
+                                        </span>
+                                    )}
+                                </div>
+
                                 {order.status === "delivered" && (
                                     <div style={{ marginTop: "14px", textAlign: "right" }}>
                                         <button
