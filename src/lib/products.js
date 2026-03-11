@@ -89,17 +89,17 @@ const BRANDS = {
 const PLATFORMS_LIST = ["Amazon", "Flipkart", "Meesho", "Myntra", "Nykaa"];
 const BADGES = ["Best Seller", "Top Rated", "Premium", "Hot", "New", null, null, null, null, null];
 
-// Reliable image seeds per category (picsum.photos always works)
-const CATEGORY_IMAGE_SEEDS = {
-    phones: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    laptops: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    audio: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
-    tablets: [31, 32, 33, 34, 35, 36, 37, 38],
-    watches: [41, 42, 43, 44, 45, 46, 47, 48],
-    cameras: [51, 52, 53, 54, 55, 56, 57, 58],
-    gaming: [61, 62, 63, 64, 65, 66, 67, 68],
-    appliances: [71, 72, 73, 74, 75, 76, 77, 78],
-    beauty: [81, 82, 83, 84, 85, 86, 87, 88],
+// Category colors for product image placeholders (bg/text)
+const CATEGORY_COLORS = {
+    phones: { bg: "DBEAFE", text: "1E40AF" },
+    laptops: { bg: "E0E7FF", text: "3730A3" },
+    audio: { bg: "F3E8FF", text: "6B21A8" },
+    tablets: { bg: "D1FAE5", text: "065F46" },
+    watches: { bg: "FEF3C7", text: "92400E" },
+    cameras: { bg: "FFE4E6", text: "9F1239" },
+    gaming: { bg: "EDE9FE", text: "5B21B6" },
+    appliances: { bg: "CCFBF1", text: "134E4A" },
+    beauty: { bg: "FFF1F2", text: "BE123C" },
 };
 
 // Generate REAL search URLs for each platform
@@ -136,7 +136,7 @@ export function generateProducts() {
 
     for (const category of categories) {
         const brandList = BRANDS[category];
-        const imgSeeds = CATEGORY_IMAGE_SEEDS[category] || CATEGORY_IMAGE_SEEDS.phones;
+        const colors = CATEGORY_COLORS[category] || CATEGORY_COLORS.phones;
 
         for (const { brand, models, priceRange } of brandList) {
             // Determine which platforms this brand appears on
@@ -175,9 +175,9 @@ export function generateProducts() {
                 // Verified
                 const verified = seededRandom(seed + 5) > 0.35;
 
-                // Image — use picsum with deterministic seed per product
-                const imgSeed = imgSeeds[(id + mi) % imgSeeds.length];
-                const imageUrl = `https://picsum.photos/seed/sc${category}${imgSeed}${mi}/400/400`;
+                // Image — branded placeholder with category colors
+                const imgText = encodeURIComponent(`${brand}\n${model}`);
+                const imageUrl = `https://placehold.co/400x400/${colors.bg}/${colors.text}?text=${imgText}&font=inter`;
 
                 products.push({
                     id: id++,

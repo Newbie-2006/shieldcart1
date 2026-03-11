@@ -190,7 +190,7 @@ export default function MarketplacePage() {
                 }
                 .product-image {
                     height: 200px;
-                    background: #F9FAFB;
+                    background: #F3F4F6;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -434,7 +434,6 @@ export default function MarketplacePage() {
                                             src={product.imageUrl}
                                             alt={product.name}
                                             loading="lazy"
-                                            onError={(e) => { e.target.style.display = 'none'; }}
                                         />
                                         {product.badge && (
                                             <div className="product-badge" style={{
