@@ -104,6 +104,27 @@ export default function DashboardPage() {
         }
     };
 
+    const handleCancelOrder = async (orderId) => {
+        if (!confirm("Are you sure you want to cancel this order? Your refund will be processed.")) return;
+        try {
+            const res = await fetch(`/api/orders/${orderId}/cancel`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setOrders((prev) =>
+                    prev.map((o) => o.id === orderId ? { ...o, status: "cancelled", payment_status: "refunded" } : o)
+                );
+                alert("Order cancelled. Refund of ₹" + (data.refundAmount || 0).toLocaleString("en-IN") + " will be processed.");
+            } else {
+                alert(data.error || "Failed to cancel order");
+            }
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    };
+
     return (
         <div style={{ minHeight: "100vh", background: "var(--canvas)" }}>
             <Navbar />
@@ -304,6 +325,21 @@ export default function DashboardPage() {
                                             }}
                                         >
                                             🔄 Request Return
+                                        </button>
+                                    </div>
+                                )}
+
+                                {order.status !== "delivered" && order.status !== "cancelled" && order.status !== "refunded" && (
+                                    <div style={{ marginTop: "14px", textAlign: "right" }}>
+                                        <button
+                                            className="btn-soft btn-small"
+                                            style={{ color: "#DC2626", borderColor: "#FECACA" }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleCancelOrder(order.id);
+                                            }}
+                                        >
+                                            ✕ Cancel Order
                                         </button>
                                     </div>
                                 )}
