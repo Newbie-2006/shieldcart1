@@ -14,6 +14,8 @@ const CATEGORIES = [
     { key: "watches", label: "Watches", icon: "⌚" },
     { key: "cameras", label: "Cameras", icon: "📷" },
     { key: "gaming", label: "Gaming", icon: "🎮" },
+    { key: "appliances", label: "Appliances", icon: "🏠" },
+    { key: "beauty", label: "Beauty", icon: "💄" },
 ];
 
 const PLATFORMS = [
@@ -21,36 +23,85 @@ const PLATFORMS = [
     { key: "Amazon", label: "Amazon India", color: "#FF9900", bg: "#FFF7ED" },
     { key: "Flipkart", label: "Flipkart", color: "#2874F0", bg: "#EFF6FF" },
     { key: "Meesho", label: "Meesho", color: "#9B2DE8", bg: "#F5F3FF" },
+    { key: "Myntra", label: "Myntra", color: "#FF3E6C", bg: "#FFF1F2" },
+    { key: "Nykaa", label: "Nykaa", color: "#FC2779", bg: "#FFF1F2" },
 ];
 
 const PRODUCTS = [
-    // Phones
-    { id: 1, name: "Apple iPhone 15 (128GB)", category: "phones", price: 67999, mrp: 79900, platform: "Amazon", image: "📱", rating: 4.6, reviews: 12840, url: "https://www.amazon.in/dp/B0CHX68Z7B", badge: "Best Seller", verified: true },
-    { id: 2, name: "Samsung Galaxy S24 Ultra", category: "phones", price: 129999, mrp: 134999, platform: "Amazon", image: "📱", rating: 4.5, reviews: 8721, url: "https://www.amazon.in/dp/B0CS5TCLPY", badge: "Premium", verified: true },
-    { id: 3, name: "OnePlus 12 (256GB)", category: "phones", price: 59999, mrp: 64999, platform: "Flipkart", image: "📱", rating: 4.4, reviews: 15230, url: "https://www.flipkart.com/oneplus-12", verified: true },
-    { id: 4, name: "Google Pixel 8a", category: "phones", price: 43999, mrp: 52999, platform: "Flipkart", image: "📱", rating: 4.3, reviews: 6540, url: "https://www.flipkart.com/pixel-8a" },
-    { id: 5, name: "Realme GT 6T", category: "phones", price: 22999, mrp: 27999, platform: "Meesho", image: "📱", rating: 4.1, reviews: 3200, url: "https://meesho.com/realme-gt" },
-    // Laptops
-    { id: 6, name: "MacBook Air M3 (16GB)", category: "laptops", price: 114990, mrp: 134900, platform: "Amazon", image: "💻", rating: 4.8, reviews: 5430, url: "https://www.amazon.in/dp/B0CW5JRCFJ", badge: "Top Rated", verified: true },
-    { id: 7, name: "Dell XPS 15 (i7, 16GB)", category: "laptops", price: 142990, mrp: 159900, platform: "Amazon", image: "💻", rating: 4.5, reviews: 2340, url: "https://www.amazon.in/dp/Dell-XPS-15", verified: true },
-    { id: 8, name: "HP Pavilion 14 (Ryzen 5)", category: "laptops", price: 54990, mrp: 64999, platform: "Flipkart", image: "💻", rating: 4.2, reviews: 7820, url: "https://www.flipkart.com/hp-pavilion" },
-    { id: 9, name: "Lenovo IdeaPad 3 (i5)", category: "laptops", price: 47990, mrp: 59990, platform: "Flipkart", image: "💻", rating: 4.1, reviews: 9120, url: "https://www.flipkart.com/lenovo-ideapad" },
-    // Audio
-    { id: 10, name: "Sony WH-1000XM5", category: "audio", price: 26990, mrp: 34990, platform: "Amazon", image: "🎧", rating: 4.7, reviews: 18450, url: "https://www.amazon.in/dp/B09XS7JWHH", badge: "Best Seller", verified: true },
-    { id: 11, name: "Apple AirPods Pro 2", category: "audio", price: 21490, mrp: 24900, platform: "Amazon", image: "🎧", rating: 4.6, reviews: 22340, url: "https://www.amazon.in/dp/B0CHWRXH8B", verified: true },
-    { id: 12, name: "JBL Tune 770NC", category: "audio", price: 4999, mrp: 7999, platform: "Flipkart", image: "🎧", rating: 4.3, reviews: 5670, url: "https://www.flipkart.com/jbl-tune-770nc" },
-    { id: 13, name: "boAt Rockerz 550", category: "audio", price: 1799, mrp: 3990, platform: "Meesho", image: "🎧", rating: 4.0, reviews: 34200, url: "https://meesho.com/boat-rockerz" },
-    // Tablets
-    { id: 14, name: "iPad Air M2 (128GB)", category: "tablets", price: 62990, mrp: 69900, platform: "Amazon", image: "📟", rating: 4.7, reviews: 4560, url: "https://www.amazon.in/dp/B0D3J85M2F", badge: "Premium", verified: true },
-    { id: 15, name: "Samsung Galaxy Tab S9 FE", category: "tablets", price: 30999, mrp: 44999, platform: "Flipkart", image: "📟", rating: 4.4, reviews: 6780, url: "https://www.flipkart.com/tab-s9-fe" },
-    // Watches
-    { id: 16, name: "Apple Watch Series 9", category: "watches", price: 41900, mrp: 49900, platform: "Amazon", image: "⌚", rating: 4.6, reviews: 8900, url: "https://www.amazon.in/dp/Apple-Watch-9", verified: true },
-    { id: 17, name: "Samsung Galaxy Watch 6", category: "watches", price: 23999, mrp: 32999, platform: "Flipkart", image: "⌚", rating: 4.3, reviews: 5430, url: "https://www.flipkart.com/galaxy-watch-6" },
-    // Cameras
-    { id: 18, name: "Canon EOS R50 (Kit)", category: "cameras", price: 74990, mrp: 84995, platform: "Amazon", image: "📷", rating: 4.5, reviews: 1290, url: "https://www.amazon.in/dp/Canon-R50", verified: true },
-    // Gaming
-    { id: 19, name: "PlayStation 5 (Slim)", category: "gaming", price: 49990, mrp: 54990, platform: "Amazon", image: "🎮", rating: 4.8, reviews: 11200, url: "https://www.amazon.in/dp/PS5-Slim", badge: "Hot", verified: true },
-    { id: 20, name: "Nintendo Switch OLED", category: "gaming", price: 28499, mrp: 34999, platform: "Flipkart", image: "🎮", rating: 4.6, reviews: 7890, url: "https://www.flipkart.com/switch-oled", verified: true },
+    // ─── PHONES ──────────────────────────────────────
+    { id: 1, name: "Apple iPhone 15 (128GB) - Blue", category: "phones", price: 67999, mrp: 79900, platform: "Amazon", image: "📱", rating: 4.6, reviews: 12840, url: "https://www.amazon.in/dp/B0CHX68Z7B", badge: "Best Seller", verified: true },
+    { id: 2, name: "Samsung Galaxy S24 Ultra (256GB)", category: "phones", price: 129999, mrp: 134999, platform: "Amazon", image: "📱", rating: 4.5, reviews: 8721, url: "https://www.amazon.in/dp/B0CS5TCLPY", badge: "Premium", verified: true },
+    { id: 3, name: "OnePlus 12 (256GB) Silky Black", category: "phones", price: 59999, mrp: 64999, platform: "Flipkart", image: "📱", rating: 4.4, reviews: 15230, url: "https://www.flipkart.com/oneplus-12", verified: true },
+    { id: 4, name: "Google Pixel 8a (128GB)", category: "phones", price: 43999, mrp: 52999, platform: "Flipkart", image: "📱", rating: 4.3, reviews: 6540, url: "https://www.flipkart.com/pixel-8a" },
+    { id: 5, name: "Realme GT 6T 5G (256GB)", category: "phones", price: 22999, mrp: 27999, platform: "Meesho", image: "📱", rating: 4.1, reviews: 3200, url: "https://meesho.com/realme-gt" },
+    { id: 6, name: "iPhone 16 Pro Max (256GB)", category: "phones", price: 144900, mrp: 159900, platform: "Amazon", image: "📱", rating: 4.8, reviews: 4320, url: "https://www.amazon.in/dp/iPhone-16-Pro", badge: "New", verified: true },
+    { id: 7, name: "Samsung Galaxy Z Fold 6", category: "phones", price: 154999, mrp: 164999, platform: "Flipkart", image: "📱", rating: 4.4, reviews: 2180, url: "https://www.flipkart.com/galaxy-z-fold-6", badge: "Premium", verified: true },
+    { id: 8, name: "Xiaomi 14 Ultra (512GB)", category: "phones", price: 89999, mrp: 99999, platform: "Amazon", image: "📱", rating: 4.3, reviews: 1890, url: "https://www.amazon.in/dp/Xiaomi-14-Ultra", verified: true },
+    { id: 9, name: "Nothing Phone (2a) Plus", category: "phones", price: 27999, mrp: 31999, platform: "Flipkart", image: "📱", rating: 4.2, reviews: 8760, url: "https://www.flipkart.com/nothing-phone-2a" },
+    { id: 10, name: "Poco X6 Pro 5G (256GB)", category: "phones", price: 16999, mrp: 21999, platform: "Meesho", image: "📱", rating: 4.0, reviews: 14500, url: "https://meesho.com/poco-x6-pro" },
+
+    // ─── LAPTOPS ─────────────────────────────────────
+    { id: 11, name: "MacBook Air M3 (16GB/512GB)", category: "laptops", price: 114990, mrp: 134900, platform: "Amazon", image: "💻", rating: 4.8, reviews: 5430, url: "https://www.amazon.in/dp/B0CW5JRCFJ", badge: "Top Rated", verified: true },
+    { id: 12, name: "Dell XPS 15 (i7-13700H, 16GB)", category: "laptops", price: 142990, mrp: 159900, platform: "Amazon", image: "💻", rating: 4.5, reviews: 2340, url: "https://www.amazon.in/dp/Dell-XPS-15", verified: true },
+    { id: 13, name: "HP Pavilion 14 (Ryzen 5, 16GB)", category: "laptops", price: 54990, mrp: 64999, platform: "Flipkart", image: "💻", rating: 4.2, reviews: 7820, url: "https://www.flipkart.com/hp-pavilion" },
+    { id: 14, name: "Lenovo IdeaPad Slim 3 (i5, 8GB)", category: "laptops", price: 47990, mrp: 59990, platform: "Flipkart", image: "💻", rating: 4.1, reviews: 9120, url: "https://www.flipkart.com/lenovo-ideapad" },
+    { id: 15, name: "MacBook Pro 14\" M3 Pro (18GB)", category: "laptops", price: 179990, mrp: 199900, platform: "Amazon", image: "💻", rating: 4.9, reviews: 3210, url: "https://www.amazon.in/dp/MacBook-Pro-M3", badge: "Premium", verified: true },
+    { id: 16, name: "ASUS ROG Strix G16 (RTX 4060)", category: "laptops", price: 109990, mrp: 129990, platform: "Flipkart", image: "💻", rating: 4.4, reviews: 4560, url: "https://www.flipkart.com/asus-rog-g16", badge: "Gaming", verified: true },
+    { id: 17, name: "Acer Aspire 5 (i5, 16GB)", category: "laptops", price: 42990, mrp: 54999, platform: "Amazon", image: "💻", rating: 4.1, reviews: 11200, url: "https://www.amazon.in/dp/Acer-Aspire-5" },
+    { id: 18, name: "HP Victus 16 (RTX 4050)", category: "laptops", price: 72990, mrp: 84999, platform: "Flipkart", image: "💻", rating: 4.3, reviews: 6780, url: "https://www.flipkart.com/hp-victus-16" },
+
+    // ─── AUDIO ───────────────────────────────────────
+    { id: 19, name: "Sony WH-1000XM5 Wireless", category: "audio", price: 26990, mrp: 34990, platform: "Amazon", image: "🎧", rating: 4.7, reviews: 18450, url: "https://www.amazon.in/dp/B09XS7JWHH", badge: "Best Seller", verified: true },
+    { id: 20, name: "Apple AirPods Pro 2 (USB-C)", category: "audio", price: 21490, mrp: 24900, platform: "Amazon", image: "🎧", rating: 4.6, reviews: 22340, url: "https://www.amazon.in/dp/B0CHWRXH8B", verified: true },
+    { id: 21, name: "JBL Tune 770NC Wireless", category: "audio", price: 4999, mrp: 7999, platform: "Flipkart", image: "🎧", rating: 4.3, reviews: 5670, url: "https://www.flipkart.com/jbl-tune-770nc" },
+    { id: 22, name: "boAt Rockerz 550 Bluetooth", category: "audio", price: 1799, mrp: 3990, platform: "Meesho", image: "🎧", rating: 4.0, reviews: 34200, url: "https://meesho.com/boat-rockerz" },
+    { id: 23, name: "Samsung Galaxy Buds 3 Pro", category: "audio", price: 17999, mrp: 21999, platform: "Amazon", image: "🎧", rating: 4.4, reviews: 3450, url: "https://www.amazon.in/dp/Galaxy-Buds-3", verified: true },
+    { id: 24, name: "Sony WF-1000XM5 Earbuds", category: "audio", price: 19990, mrp: 26990, platform: "Amazon", image: "🎧", rating: 4.5, reviews: 8900, url: "https://www.amazon.in/dp/Sony-WF-XM5", badge: "Premium", verified: true },
+    { id: 25, name: "Marshall Major IV Bluetooth", category: "audio", price: 8999, mrp: 12999, platform: "Flipkart", image: "🎧", rating: 4.4, reviews: 4320, url: "https://www.flipkart.com/marshall-major-iv", verified: true },
+    { id: 26, name: "Noise Buds VS104 TWS", category: "audio", price: 899, mrp: 2499, platform: "Meesho", image: "🎧", rating: 3.9, reviews: 42100, url: "https://meesho.com/noise-buds" },
+
+    // ─── TABLETS ──────────────────────────────────────
+    { id: 27, name: "iPad Air M2 (128GB, Wi-Fi)", category: "tablets", price: 62990, mrp: 69900, platform: "Amazon", image: "📟", rating: 4.7, reviews: 4560, url: "https://www.amazon.in/dp/B0D3J85M2F", badge: "Premium", verified: true },
+    { id: 28, name: "Samsung Galaxy Tab S9 FE (128GB)", category: "tablets", price: 30999, mrp: 44999, platform: "Flipkart", image: "📟", rating: 4.4, reviews: 6780, url: "https://www.flipkart.com/tab-s9-fe" },
+    { id: 29, name: "iPad 10th Gen (64GB, Wi-Fi)", category: "tablets", price: 33990, mrp: 39900, platform: "Amazon", image: "📟", rating: 4.5, reviews: 9870, url: "https://www.amazon.in/dp/iPad-10th", verified: true },
+    { id: 30, name: "OnePlus Pad Go (128GB)", category: "tablets", price: 19999, mrp: 22999, platform: "Flipkart", image: "📟", rating: 4.2, reviews: 5430, url: "https://www.flipkart.com/oneplus-pad-go" },
+    { id: 31, name: "Xiaomi Pad 6 (128GB)", category: "tablets", price: 24999, mrp: 30999, platform: "Amazon", image: "📟", rating: 4.3, reviews: 7650, url: "https://www.amazon.in/dp/Xiaomi-Pad-6" },
+
+    // ─── WATCHES ─────────────────────────────────────
+    { id: 32, name: "Apple Watch Series 9 (GPS, 45mm)", category: "watches", price: 41900, mrp: 49900, platform: "Amazon", image: "⌚", rating: 4.6, reviews: 8900, url: "https://www.amazon.in/dp/Apple-Watch-9", verified: true },
+    { id: 33, name: "Samsung Galaxy Watch 6 Classic", category: "watches", price: 23999, mrp: 32999, platform: "Flipkart", image: "⌚", rating: 4.3, reviews: 5430, url: "https://www.flipkart.com/galaxy-watch-6" },
+    { id: 34, name: "Apple Watch Ultra 2 (GPS+Cell)", category: "watches", price: 79900, mrp: 89900, platform: "Amazon", image: "⌚", rating: 4.8, reviews: 2340, url: "https://www.amazon.in/dp/Watch-Ultra-2", badge: "Premium", verified: true },
+    { id: 35, name: "Noise ColorFit Pro 5 Max", category: "watches", price: 3999, mrp: 7999, platform: "Meesho", image: "⌚", rating: 4.1, reviews: 18700, url: "https://meesho.com/noise-colorfit" },
+    { id: 36, name: "Fire-Boltt Phoenix Ultra", category: "watches", price: 1499, mrp: 4999, platform: "Meesho", image: "⌚", rating: 3.8, reviews: 28900, url: "https://meesho.com/fire-boltt" },
+
+    // ─── CAMERAS ─────────────────────────────────────
+    { id: 37, name: "Canon EOS R50 Body + Kit Lens", category: "cameras", price: 74990, mrp: 84995, platform: "Amazon", image: "📷", rating: 4.5, reviews: 1290, url: "https://www.amazon.in/dp/Canon-R50", verified: true },
+    { id: 38, name: "Sony Alpha A6400 (16-50mm Kit)", category: "cameras", price: 86990, mrp: 99990, platform: "Amazon", image: "📷", rating: 4.6, reviews: 3450, url: "https://www.amazon.in/dp/Sony-A6400", badge: "Top Rated", verified: true },
+    { id: 39, name: "GoPro HERO 12 Black", category: "cameras", price: 39490, mrp: 44990, platform: "Flipkart", image: "📷", rating: 4.4, reviews: 6780, url: "https://www.flipkart.com/gopro-hero-12", verified: true },
+    { id: 40, name: "DJI Mini 4 Pro (Fly More Combo)", category: "cameras", price: 109990, mrp: 119990, platform: "Amazon", image: "📷", rating: 4.7, reviews: 980, url: "https://www.amazon.in/dp/DJI-Mini-4", badge: "Premium", verified: true },
+    { id: 41, name: "Fujifilm Instax Mini 12", category: "cameras", price: 5990, mrp: 7999, platform: "Flipkart", image: "📷", rating: 4.3, reviews: 12300, url: "https://www.flipkart.com/instax-mini-12" },
+
+    // ─── GAMING ──────────────────────────────────────
+    { id: 42, name: "PlayStation 5 (Slim, 1TB)", category: "gaming", price: 49990, mrp: 54990, platform: "Amazon", image: "🎮", rating: 4.8, reviews: 11200, url: "https://www.amazon.in/dp/PS5-Slim", badge: "Hot", verified: true },
+    { id: 43, name: "Nintendo Switch OLED (White)", category: "gaming", price: 28499, mrp: 34999, platform: "Flipkart", image: "🎮", rating: 4.6, reviews: 7890, url: "https://www.flipkart.com/switch-oled", verified: true },
+    { id: 44, name: "Xbox Series X (1TB)", category: "gaming", price: 44990, mrp: 49999, platform: "Amazon", image: "🎮", rating: 4.5, reviews: 5670, url: "https://www.amazon.in/dp/Xbox-Series-X", verified: true },
+    { id: 45, name: "Meta Quest 3 (128GB VR)", category: "gaming", price: 49999, mrp: 57999, platform: "Amazon", image: "🎮", rating: 4.3, reviews: 3450, url: "https://www.amazon.in/dp/Meta-Quest-3", badge: "New", verified: true },
+    { id: 46, name: "Steam Deck OLED (512GB)", category: "gaming", price: 55990, mrp: 62999, platform: "Flipkart", image: "🎮", rating: 4.7, reviews: 2100, url: "https://www.flipkart.com/steam-deck-oled", badge: "Premium", verified: true },
+    { id: 47, name: "PS5 DualSense Edge Controller", category: "gaming", price: 18990, mrp: 21990, platform: "Amazon", image: "🎮", rating: 4.4, reviews: 4320, url: "https://www.amazon.in/dp/DualSense-Edge" },
+
+    // ─── APPLIANCES ──────────────────────────────────
+    { id: 48, name: "Dyson V15 Detect Vacuum", category: "appliances", price: 52990, mrp: 62900, platform: "Amazon", image: "🏠", rating: 4.6, reviews: 3420, url: "https://www.amazon.in/dp/Dyson-V15", badge: "Best Seller", verified: true },
+    { id: 49, name: "Samsung 7kg Front Load Washer", category: "appliances", price: 32990, mrp: 41990, platform: "Flipkart", image: "🏠", rating: 4.3, reviews: 8760, url: "https://www.flipkart.com/samsung-washer" },
+    { id: 50, name: "LG 655L Side-by-Side Fridge", category: "appliances", price: 72990, mrp: 89990, platform: "Amazon", image: "🏠", rating: 4.4, reviews: 5430, url: "https://www.amazon.in/dp/LG-655L", verified: true },
+    { id: 51, name: "Havells Air Fryer 4L Digital", category: "appliances", price: 4499, mrp: 7999, platform: "Meesho", image: "🏠", rating: 4.1, reviews: 15600, url: "https://meesho.com/havells-air-fryer" },
+    { id: 52, name: "Philips 55\" 4K Google TV", category: "appliances", price: 37990, mrp: 49990, platform: "Flipkart", image: "🏠", rating: 4.2, reviews: 9870, url: "https://www.flipkart.com/philips-55-tv" },
+
+    // ─── BEAUTY ──────────────────────────────────────
+    { id: 53, name: "Dyson Airwrap Complete Long", category: "beauty", price: 44900, mrp: 49900, platform: "Nykaa", image: "💄", rating: 4.7, reviews: 6540, url: "https://www.nykaa.com/dyson-airwrap", badge: "Premium", verified: true },
+    { id: 54, name: "MAC Ruby Woo Lipstick", category: "beauty", price: 1750, mrp: 2100, platform: "Nykaa", image: "💄", rating: 4.5, reviews: 34500, url: "https://www.nykaa.com/mac-ruby-woo", verified: true },
+    { id: 55, name: "Philips BT3211 Beard Trimmer", category: "beauty", price: 1399, mrp: 1895, platform: "Amazon", image: "💄", rating: 4.2, reviews: 45600, url: "https://www.amazon.in/dp/Philips-BT3211" },
+    { id: 56, name: "Forest Essentials Gift Set", category: "beauty", price: 3450, mrp: 4500, platform: "Nykaa", image: "💄", rating: 4.4, reviews: 2340, url: "https://www.nykaa.com/forest-essentials", badge: "Best Seller" },
+    { id: 57, name: "Maybelline Fit Me Foundation", category: "beauty", price: 399, mrp: 599, platform: "Meesho", image: "💄", rating: 4.0, reviews: 52300, url: "https://meesho.com/maybelline-fit-me" },
 ];
 
 export default function MarketplacePage() {
