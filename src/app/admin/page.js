@@ -55,6 +55,48 @@ export default function AdminPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [selectedOrders, setSelectedOrders] = useState([]);
+    const [inspectModal, setInspectModal] = useState(null);
+    const [inspectNotes, setInspectNotes] = useState("");
+    const [inspectChecklist, setInspectChecklist] = useState({
+        packaging_intact: false, correct_item: false, no_defects: false,
+        serial_number_matches: false, all_accessories_present: false,
+    });
+
+    const DUMMY_AGENTS = {
+        "agent-rahul": "Rahul Sharma", "agent-priya": "Priya Patel",
+        "agent-arjun": "Arjun Mehta", "agent-sneha": "Sneha Reddy",
+        "agent-vikram": "Vikram Singh", "agent-ananya": "Ananya Gupta",
+    };
+
+    const openInspectModal = (order) => {
+        setInspectModal(order);
+        setInspectNotes("");
+        setInspectChecklist({
+            packaging_intact: false, correct_item: false, no_defects: false,
+            serial_number_matches: false, all_accessories_present: false,
+        });
+    };
+
+    const handleInspectSubmit = async (result) => {
+        if (!inspectModal) return;
+        const newStatus = result === "pass" ? "passed" : "failed";
+        try {
+            const res = await fetch(`/api/orders/${inspectModal.id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || "Failed to update");
+                return;
+            }
+            await fetchAll();
+            setInspectModal(null);
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    };
 
     const fetchOrders = async () => {
         const { data } = await supabase.from("orders").select("*, user:profiles!orders_user_id_fkey(full_name, email), inspector:profiles!orders_inspector_id_fkey(full_name)").order("created_at", { ascending: false });
@@ -567,7 +609,7 @@ export default function AdminPage() {
                                                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                                                         <button
                                                             className="action-btn btn-inspect"
-                                                            onClick={() => router.push(`/order/${order.id}`)}
+                                                            onClick={() => openInspectModal(order)}
                                                         >
                                                             Inspect
                                                         </button>
@@ -987,6 +1029,162 @@ export default function AdminPage() {
                                 <button className="btn-soft btn-small" onClick={() => setStatusModal(null)}>Cancel</button>
                                 <button className="btn-olive btn-small" onClick={handleUpdateStatus} disabled={!newStatus}>
                                     Update Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Inspect Order Modal */}
+                {inspectModal && (
+                    <div
+                        style={{
+                            position: "fixed", inset: 0,
+                            background: "rgba(15,23,42,0.5)", zIndex: 500,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            padding: "20px", animation: "fadeIn 0.2s ease",
+                        }}
+                        onClick={() => setInspectModal(null)}
+                    >
+                        <div
+                            style={{
+                                background: "white", borderRadius: "20px",
+                                padding: "28px", width: "100%", maxWidth: "600px",
+                                maxHeight: "90vh", overflowY: "auto",
+                                boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1.2rem", fontWeight: 700, color: "#111827" }}>
+                                    🔍 Inspect Order
+                                </h3>
+                                <button onClick={() => setInspectModal(null)} style={{
+                                    background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer", color: "#6B7280",
+                                }}>✕</button>
+                            </div>
+
+                            {/* Order Info */}
+                            <div style={{ background: "#F9FAFB", borderRadius: "14px", padding: "18px", marginBottom: "18px" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "0.85rem" }}>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Product</div>
+                                        <div style={{ fontWeight: 700, color: "#111827" }}>{inspectModal.product_name}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Platform</div>
+                                        <div style={{ fontWeight: 600 }}>{inspectModal.platform}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Customer</div>
+                                        <div style={{ fontWeight: 600 }}>{inspectModal.user?.full_name || "—"}</div>
+                                        <div style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>{inspectModal.user?.email || ""}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Amount</div>
+                                        <div style={{ fontWeight: 700, color: "#111827" }}>₹{Number(inspectModal.price).toLocaleString("en-IN")}
+                                            <span style={{ fontSize: "0.75rem", color: "#6B7280" }}> + ₹{inspectModal.shieldcart_fee || 0} fee</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Payment</div>
+                                        <div style={{ fontWeight: 600 }}>
+                                            {inspectModal.payment_status === "cod" ? "💵 COD" : inspectModal.payment_status === "refunded" ? "↩️ Refunded" : "💳 Paid"}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Status</div>
+                                        <StatusBadge status={inspectModal.status} />
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Agent</div>
+                                        <div style={{ fontWeight: 600 }}>
+                                            {inspectModal.inspector?.full_name || (inspectModal.inspector_id && DUMMY_AGENTS[inspectModal.inspector_id]) || "Not assigned"}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Order ID</div>
+                                        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem", color: "#6B7280" }}>
+                                            #{inspectModal.id?.slice(0, 12)}
+                                        </div>
+                                    </div>
+                                </div>
+                                {inspectModal.delivery_address && (
+                                    <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #E5E7EB" }}>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Delivery Address</div>
+                                        <div style={{ fontSize: "0.85rem", color: "#374151" }}>{inspectModal.delivery_address}</div>
+                                    </div>
+                                )}
+                                {inspectModal.product_url && (
+                                    <div style={{ marginTop: "8px" }}>
+                                        <div style={{ color: "#6B7280", fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "3px" }}>Product URL</div>
+                                        <a href={inspectModal.product_url} target="_blank" rel="noopener noreferrer"
+                                            style={{ fontSize: "0.82rem", color: "#2563EB", wordBreak: "break-all" }}>
+                                            {inspectModal.product_url}
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Inspection Checklist */}
+                            <div style={{ marginBottom: "18px" }}>
+                                <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: "#111827", marginBottom: "12px" }}>
+                                    ✅ Inspection Checklist
+                                </h4>
+                                {Object.entries(inspectChecklist).map(([key, val]) => (
+                                    <label key={key} style={{
+                                        display: "flex", alignItems: "center", gap: "10px",
+                                        padding: "10px 12px", borderRadius: "10px", marginBottom: "6px",
+                                        background: val ? "#ECFDF5" : "#F9FAFB",
+                                        border: `1.5px solid ${val ? "#A7F3D0" : "#E5E7EB"}`,
+                                        cursor: "pointer", transition: "all 0.2s",
+                                        fontSize: "0.85rem", fontWeight: 500,
+                                        color: val ? "#059669" : "#374151",
+                                    }}>
+                                        <input type="checkbox" checked={val}
+                                            onChange={() => setInspectChecklist(prev => ({ ...prev, [key]: !prev[key] }))}
+                                            style={{ width: "18px", height: "18px", cursor: "pointer", accentColor: "#059669" }}
+                                        />
+                                        {key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
+                                    </label>
+                                ))}
+                            </div>
+
+                            {/* Notes */}
+                            <div style={{ marginBottom: "20px" }}>
+                                <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>
+                                    📝 Inspection Notes
+                                </h4>
+                                <textarea
+                                    value={inspectNotes}
+                                    onChange={(e) => setInspectNotes(e.target.value)}
+                                    placeholder="Add notes about the inspection..."
+                                    rows={3}
+                                    style={{
+                                        width: "100%", padding: "12px", borderRadius: "10px",
+                                        border: "1.5px solid #E5E7EB", fontSize: "0.85rem",
+                                        fontFamily: "'Inter', sans-serif", outline: "none",
+                                        resize: "vertical",
+                                    }}
+                                />
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                                <button className="btn-soft btn-small" onClick={() => setInspectModal(null)}>Cancel</button>
+                                <button
+                                    className="action-btn"
+                                    style={{ background: "#FEE2E2", color: "#DC2626", padding: "10px 24px", borderRadius: "10px", fontWeight: 700 }}
+                                    onClick={() => handleInspectSubmit("fail")}
+                                >
+                                    ❌ Fail Inspection
+                                </button>
+                                <button
+                                    className="action-btn"
+                                    style={{ background: "linear-gradient(135deg, #10B981, #059669)", color: "white", padding: "10px 24px", borderRadius: "10px", fontWeight: 700, boxShadow: "0 2px 8px rgba(16,185,129,0.3)" }}
+                                    onClick={() => handleInspectSubmit("pass")}
+                                >
+                                    ✅ Pass Inspection
                                 </button>
                             </div>
                         </div>
