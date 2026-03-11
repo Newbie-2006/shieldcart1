@@ -3,1073 +3,1133 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 export default function LandingPage() {
-  const tlRef = useRef(null);
+  const processRef = useRef(null);
 
   useEffect(() => {
-    const rows = document.querySelectorAll(".tl-row");
+    const cards = document.querySelectorAll(".fade-up");
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const siblings = [...entry.target.parentElement.children];
-            const i = siblings.indexOf(entry.target);
-            setTimeout(() => entry.target.classList.add("visible"), i * 100);
+            entry.target.classList.add("visible");
             obs.unobserve(entry.target);
           }
         });
       },
       { threshold: 0.1 }
     );
-    rows.forEach((r) => obs.observe(r));
+    cards.forEach((c) => obs.observe(c));
     return () => obs.disconnect();
   }, []);
 
   return (
     <>
       <style jsx global>{`
-        /* ── NAV (landing) ── */
-        .landing-nav {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+          --primary: #2563EB;
+          --primary-dark: #1D4ED8;
+          --primary-light: #3B82F6;
+          --primary-pale: #EFF6FF;
+          --primary-glow: rgba(37, 99, 235, 0.15);
+          --accent: #10B981;
+          --accent-dark: #059669;
+          --accent-pale: #ECFDF5;
+          --dark: #0F172A;
+          --dark2: #1E293B;
+          --gray-900: #111827;
+          --gray-800: #1F2937;
+          --gray-700: #374151;
+          --gray-600: #4B5563;
+          --gray-500: #6B7280;
+          --gray-400: #9CA3AF;
+          --gray-300: #D1D5DB;
+          --gray-200: #E5E7EB;
+          --gray-100: #F3F4F6;
+          --gray-50: #F9FAFB;
+          --white: #FFFFFF;
+          --gradient-primary: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+          --gradient-hero: linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 50%, #F9FAFB 100%);
+          --gradient-dark: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+          --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+          --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+          --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+          --shadow-xl: 0 20px 50px -12px rgba(0,0,0,0.15);
+          --shadow-glow: 0 0 40px rgba(37,99,235,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .lp-body {
+          font-family: 'Inter', sans-serif;
+          color: var(--gray-900);
+          background: var(--white);
+          overflow-x: hidden;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-ring {
+          0% { transform: scale(0.9); opacity: 1; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(40px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+
+        .fade-up {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-up.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* ── NAV ── */
+        .sc-nav {
           position: fixed;
           top: 0; left: 0; right: 0;
           z-index: 200;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 18px 52px;
-          background: rgba(250,247,242,0.92);
-          backdrop-filter: blur(14px);
-          border-bottom: 1px solid var(--sand3);
+          padding: 16px 48px;
+          background: rgba(255,255,255,0.85);
+          backdrop-filter: blur(20px) saturate(180%);
+          border-bottom: 1px solid rgba(0,0,0,0.06);
+          transition: all 0.3s;
         }
 
-        .logo {
-          font-family: 'Manrope', sans-serif;
-          font-size: 1.3rem;
-          font-weight: 800;
-          color: var(--bark);
-          letter-spacing: -0.02em;
+        .sc-logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
           text-decoration: none;
         }
-        .logo span { color: var(--olive); }
-        .logo sup {
-          font-size: 0.5rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--burnt);
-          font-weight: 700;
-          vertical-align: super;
-          margin-left: 3px;
+        .sc-logo-icon {
+          width: 36px;
+          height: 36px;
+          background: var(--gradient-primary);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          box-shadow: 0 2px 8px rgba(37,99,235,0.25);
         }
+        .sc-logo-text {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: var(--gray-900);
+          letter-spacing: -0.02em;
+        }
+        .sc-logo-text span { color: var(--primary); }
 
-        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
         .nav-link {
-          font-size: 0.82rem;
+          font-size: 0.88rem;
           font-weight: 500;
-          letter-spacing: 0.02em;
-          color: var(--stone);
+          color: var(--gray-600);
           text-decoration: none;
           transition: color 0.2s;
+          position: relative;
         }
-        .nav-link:hover { color: var(--olive); }
+        .nav-link:hover { color: var(--primary); }
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--primary);
+          transition: width 0.3s;
+          border-radius: 2px;
+        }
+        .nav-link:hover::after { width: 100%; }
 
-        .nav-pill {
-          background: var(--olive2);
+        .nav-cta {
+          background: var(--gradient-primary);
           color: var(--white);
-          font-size: 0.72rem;
-          font-weight: 800;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          padding: 10px 20px;
-          border-radius: 100px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          padding: 10px 24px;
+          border-radius: 10px;
           text-decoration: none;
+          transition: all 0.3s;
+          box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        }
+        .nav-cta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 16px rgba(37,99,235,0.4);
         }
 
         /* ── HERO ── */
-        .hero {
+        .hero-section {
           min-height: 100vh;
-          padding: 140px 52px 80px;
+          background: var(--gradient-hero);
+          padding: 140px 48px 100px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+        .hero-section::before {
+          content: '';
+          position: absolute;
+          top: -200px;
+          right: -200px;
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+          border-radius: 50%;
+        }
+        .hero-section::after {
+          content: '';
+          position: absolute;
+          bottom: -100px;
+          left: -100px;
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%);
+          border-radius: 50%;
+        }
+
+        .hero-inner {
+          max-width: 1200px;
+          width: 100%;
           display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
+          grid-template-columns: 1fr 1fr;
           gap: 60px;
           align-items: center;
-          max-width: 1200px;
-          margin: 0 auto;
           position: relative;
+          z-index: 1;
         }
 
-        .hero::before {
-          content: '';
-          position: fixed;
-          top: -200px; right: -200px;
-          width: 700px; height: 700px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(196,82,26,0.07) 0%, transparent 65%);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .hero-left { position: relative; z-index: 1; }
-
-        .hero-tag {
+        .hero-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: var(--olive-pale);
-          border: 1px solid var(--olive-mid);
-          color: var(--olive2);
+          background: var(--primary-pale);
+          border: 1px solid rgba(37,99,235,0.15);
+          padding: 8px 18px;
+          border-radius: 100px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: var(--primary);
+          margin-bottom: 24px;
+          animation: fadeInUp 0.6s ease both;
+        }
+        .hero-badge-dot {
+          width: 8px;
+          height: 8px;
+          background: var(--accent);
+          border-radius: 50%;
+          position: relative;
+        }
+        .hero-badge-dot::after {
+          content: '';
+          position: absolute;
+          inset: -3px;
+          border-radius: 50%;
+          border: 2px solid var(--accent);
+          animation: pulse-ring 2s infinite;
+        }
+
+        .hero-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 3.5rem;
+          font-weight: 800;
+          line-height: 1.1;
+          color: var(--gray-900);
+          margin-bottom: 20px;
+          letter-spacing: -0.03em;
+          animation: fadeInUp 0.6s ease 0.15s both;
+        }
+        .hero-title .blue { color: var(--primary); }
+        .hero-title .green { color: var(--accent); }
+
+        .hero-desc {
+          font-size: 1.1rem;
+          line-height: 1.7;
+          color: var(--gray-500);
+          margin-bottom: 36px;
+          max-width: 520px;
+          animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .hero-btns {
+          display: flex;
+          gap: 16px;
+          animation: fadeInUp 0.6s ease 0.45s both;
+        }
+        .btn-primary {
+          background: var(--gradient-primary);
+          color: var(--white);
+          font-size: 0.95rem;
+          font-weight: 600;
+          padding: 14px 32px;
+          border-radius: 12px;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.3s;
+          box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+          border: none;
+          cursor: pointer;
+        }
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(37,99,235,0.45);
+        }
+        .btn-outline {
+          background: var(--white);
+          color: var(--gray-700);
+          font-size: 0.95rem;
+          font-weight: 600;
+          padding: 14px 32px;
+          border-radius: 12px;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border: 1.5px solid var(--gray-200);
+          transition: all 0.3s;
+          cursor: pointer;
+        }
+        .btn-outline:hover {
+          border-color: var(--primary);
+          color: var(--primary);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
+        }
+
+        /* Hero Card */
+        .hero-card {
+          background: var(--white);
+          border-radius: 20px;
+          padding: 32px;
+          box-shadow: var(--shadow-xl);
+          border: 1px solid rgba(0,0,0,0.06);
+          animation: slideInRight 0.8s ease 0.3s both;
+          position: relative;
+          overflow: hidden;
+        }
+        .hero-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .hero-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 24px;
+        }
+        .hero-card-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--gray-900);
+        }
+        .hero-card-badge {
+          background: var(--accent-pale);
+          color: var(--accent-dark);
           font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          padding: 6px 14px;
+          border-radius: 100px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .verification-item {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 16px;
+          background: var(--gray-50);
+          border-radius: 12px;
+          margin-bottom: 10px;
+          transition: all 0.3s;
+        }
+        .verification-item:hover {
+          background: var(--primary-pale);
+          transform: translateX(4px);
+        }
+        .v-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          flex-shrink: 0;
+        }
+        .v-icon-blue { background: var(--primary-pale); }
+        .v-icon-green { background: var(--accent-pale); }
+        .v-icon-amber { background: #FEF3C7; }
+        .v-label { font-size: 0.88rem; font-weight: 600; color: var(--gray-700); }
+        .v-sub { font-size: 0.78rem; color: var(--gray-400); margin-top: 2px; }
+
+        .hero-progress {
+          margin-top: 20px;
+          background: var(--gray-100);
+          border-radius: 100px;
+          height: 8px;
+          overflow: hidden;
+        }
+        .hero-progress-fill {
+          height: 100%;
+          width: 85%;
+          background: linear-gradient(90deg, var(--primary), var(--accent));
+          border-radius: 100px;
+          animation: shimmer 2s infinite;
+          background-size: 200% 100%;
+        }
+        .hero-progress-label {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 8px;
+          font-size: 0.78rem;
+          color: var(--gray-400);
+          font-weight: 500;
+        }
+
+        /* ── STATS ── */
+        .stats-bar {
+          background: var(--white);
+          padding: 48px;
+          border-bottom: 1px solid var(--gray-100);
+        }
+        .stats-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 32px;
+        }
+        .stat-item {
+          text-align: center;
+          padding: 20px;
+        }
+        .stat-num {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: var(--primary);
+          letter-spacing: -0.03em;
+        }
+        .stat-label {
+          font-size: 0.88rem;
+          color: var(--gray-500);
+          margin-top: 6px;
+          font-weight: 500;
+        }
+
+        /* ── HOW IT WORKS ── */
+        .how-section {
+          padding: 100px 48px;
+          background: var(--gray-50);
+        }
+        .section-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        .section-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--primary-pale);
+          color: var(--primary);
+          font-size: 0.78rem;
+          font-weight: 700;
           padding: 6px 16px;
           border-radius: 100px;
-          margin-bottom: 32px;
-          animation: riseUp 0.8s ease both;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 16px;
         }
-
-        .hero-tag::before {
-          content: '';
-          width: 6px; height: 6px;
-          border-radius: 50%;
-          background: var(--olive);
+        .section-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: var(--gray-900);
+          letter-spacing: -0.03em;
+          margin-bottom: 14px;
         }
-
-        .hero h1 {
-          font-family: 'Lora', serif;
-          font-size: clamp(2.8rem, 5vw, 4.4rem);
-          font-weight: 500;
-          line-height: 1.12;
-          color: var(--bark);
-          letter-spacing: -0.01em;
-          animation: riseUp 0.8s 0.08s ease both;
-        }
-
-        .hero h1 em {
-          font-style: italic;
-          color: var(--olive);
-        }
-
-        .hero h1 .accent {
-          font-style: italic;
-          color: var(--burnt);
-          font-family: 'Lora', serif;
-        }
-
-        .hero-body {
-          margin-top: 24px;
+        .section-desc {
           font-size: 1.05rem;
-          color: var(--stone);
-          font-weight: 300;
-          max-width: 460px;
-          line-height: 1.85;
-          animation: riseUp 0.8s 0.16s ease both;
+          color: var(--gray-500);
+          line-height: 1.7;
+          max-width: 600px;
+          margin-bottom: 56px;
         }
 
-        .hero-actions {
+        .process-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+        }
+        .process-card {
+          background: var(--white);
+          border-radius: 20px;
+          padding: 36px 28px;
+          border: 1px solid var(--gray-200);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .process-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: var(--gradient-primary);
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+        .process-card:hover {
+          transform: translateY(-6px);
+          box-shadow: var(--shadow-xl);
+          border-color: transparent;
+        }
+        .process-card:hover::before { opacity: 1; }
+
+        .process-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
           display: flex;
-          gap: 12px;
-          margin-top: 40px;
-          animation: riseUp 0.8s 0.24s ease both;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          margin-bottom: 20px;
+        }
+        .p-icon-blue { background: var(--primary-pale); }
+        .p-icon-green { background: var(--accent-pale); }
+        .p-icon-purple { background: #F3E8FF; }
+
+        .process-step {
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: var(--primary);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 10px;
+        }
+        .process-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--gray-900);
+          margin-bottom: 10px;
+        }
+        .process-desc {
+          font-size: 0.9rem;
+          color: var(--gray-500);
+          line-height: 1.65;
         }
 
-        /* Hero right — stat cards */
-        .hero-right {
+        /* ── FEATURE (Dark Section) ── */
+        .feature-section {
+          background: var(--gradient-dark);
+          padding: 100px 48px;
+          position: relative;
+          overflow: hidden;
+        }
+        .feature-section::before {
+          content: '';
+          position: absolute;
+          top: -100px;
+          right: -100px;
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+        }
+        .feature-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: center;
+          position: relative;
+          z-index: 1;
+        }
+        .feature-badge {
+          display: inline-flex;
+          background: rgba(37,99,235,0.15);
+          color: var(--primary-light);
+          font-size: 0.78rem;
+          font-weight: 700;
+          padding: 6px 16px;
+          border-radius: 100px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 16px;
+        }
+        .feature-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: var(--white);
+          letter-spacing: -0.03em;
+          margin-bottom: 16px;
+          line-height: 1.15;
+        }
+        .feature-desc {
+          font-size: 1.05rem;
+          color: var(--gray-400);
+          line-height: 1.7;
+          margin-bottom: 36px;
+        }
+
+        .feature-list {
           display: flex;
           flex-direction: column;
           gap: 16px;
-          animation: riseUp 0.8s 0.2s ease both;
-          position: relative; z-index: 1;
         }
-
-        .hero-stat-card {
-          background: var(--white);
-          border: 1px solid var(--sand3);
-          border-radius: 20px;
-          padding: 28px 30px;
+        .feature-item {
           display: flex;
-          align-items: center;
-          gap: 20px;
-          box-shadow: 0 2px 16px rgba(59,47,30,0.05);
-          transition: transform 0.25s, box-shadow 0.25s;
-        }
-        .hero-stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(59,47,30,0.1); }
-
-        .sc-icon {
-          width: 56px; height: 56px;
-          border-radius: 16px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 1.5rem;
-          flex-shrink: 0;
-        }
-
-        .icon-olive { background: var(--olive-pale); }
-        .icon-burnt { background: var(--burnt-pale); }
-        .icon-sand  { background: var(--sand2); }
-
-        .sc-num {
-          font-family: 'Lora', serif;
-          font-size: 2rem;
-          font-weight: 500;
-          color: var(--bark);
-          line-height: 1;
-        }
-        .sc-num span { color: var(--olive); }
-        .sc-num .red { color: var(--burnt); }
-
-        .sc-label {
-          font-size: 0.82rem;
-          color: var(--stone);
-          margin-top: 4px;
-          font-weight: 400;
-        }
-
-        /* ── SHARED SECTION ── */
-        .sec {
-          padding: 96px 52px;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .sec-full {
-          padding: 96px 52px;
-        }
-
-        .sec-full .sec-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .tag-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 5px 14px;
-          border-radius: 100px;
-          margin-bottom: 20px;
-        }
-
-        .chip-olive { background: var(--olive-pale); color: var(--olive2); border: 1px solid var(--olive-mid); }
-        .chip-burnt { background: var(--burnt-pale); color: var(--burnt2); border: 1px solid rgba(196,82,26,0.25); }
-        .chip-sand  { background: var(--sand2); color: var(--bark); border: 1px solid var(--sand3); }
-
-        .sec-h {
-          font-family: 'Lora', serif;
-          font-size: clamp(2rem, 4vw, 3rem);
-          font-weight: 500;
-          line-height: 1.2;
-          color: var(--bark);
-          margin-bottom: 14px;
-          letter-spacing: -0.01em;
-        }
-
-        .sec-h em { font-style: italic; color: var(--olive); }
-        .sec-h .red-em { font-style: italic; color: var(--burnt); }
-
-        .sec-p {
-          font-size: 0.98rem;
-          color: var(--stone);
-          font-weight: 300;
-          max-width: 520px;
-          line-height: 1.85;
-        }
-
-        /* ── DIVIDER ── */
-        .ruled {
-          height: 1px;
-          background: var(--sand3);
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        /* ── PROBLEM ── */
-        .problem-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          gap: 16px;
-          margin-top: 52px;
-        }
-
-        .problem-card {
-          background: var(--white);
-          border: 1px solid var(--sand3);
-          border-radius: 20px;
-          padding: 32px 26px;
-          position: relative;
-          overflow: hidden;
-          transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
-        }
-        .problem-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(59,47,30,0.09); border-color: rgba(196,82,26,0.3); }
-
-        .problem-card::after {
-          content: '';
-          position: absolute;
-          left: 0; top: 0; bottom: 0;
-          width: 3px;
-          background: var(--burnt);
-          border-radius: 3px 0 0 3px;
-          transform: scaleY(0);
-          transform-origin: bottom;
-          transition: transform 0.3s ease;
-        }
-        .problem-card:hover::after { transform: scaleY(1); }
-
-        .prob-icon { font-size: 2rem; margin-bottom: 16px; }
-        .problem-card h3 { font-size: 0.97rem; font-weight: 700; color: var(--bark); margin-bottom: 8px; }
-        .problem-card p  { font-size: 0.87rem; color: var(--stone); line-height: 1.7; }
-
-        /* ── TWO SIDED ── */
-        .two-col {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-top: 52px;
-        }
-
-        .ts-box {
-          border-radius: 24px;
-          padding: 40px 36px;
-          transition: transform 0.25s;
-        }
-        .ts-box:hover { transform: translateY(-4px); }
-
-        .ts-box.consumer {
-          background: var(--olive-pale);
-          border: 1px solid var(--olive-mid);
-        }
-        .ts-box.seller {
-          background: var(--burnt-pale);
-          border: 1px solid rgba(196,82,26,0.22);
-        }
-
-        .ts-box h3 {
-          font-family: 'Lora', serif;
-          font-size: 1.5rem;
-          font-weight: 500;
-          margin-bottom: 6px;
-        }
-        .consumer h3 { color: var(--olive2); }
-        .seller h3   { color: var(--burnt2); }
-
-        .ts-box small {
-          font-size: 0.82rem;
-          display: block;
-          margin-bottom: 26px;
-          font-weight: 400;
-        }
-        .consumer small { color: var(--olive); }
-        .seller small   { color: var(--burnt); }
-
-        .ts-items { display: flex; flex-direction: column; gap: 12px; }
-
-        .ts-item {
-          display: flex;
-          gap: 12px;
           align-items: flex-start;
-          font-size: 0.9rem;
-          line-height: 1.65;
+          gap: 14px;
         }
-        .consumer .ts-item { color: #3d4a26; }
-        .seller .ts-item   { color: #5a4820; }
-
-        .ts-dot {
-          width: 20px; height: 20px;
-          border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 0.72rem;
+        .feature-check {
+          width: 28px;
+          height: 28px;
+          background: rgba(16,185,129,0.15);
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--accent);
+          font-size: 0.85rem;
           font-weight: 800;
           flex-shrink: 0;
           margin-top: 2px;
         }
-        .consumer .ts-dot { background: var(--olive-mid); color: var(--olive2); }
-        .seller .ts-dot   { background: rgba(196,82,26,0.2); color: var(--burnt2); }
-
-        /* ── TIMELINE ── */
-        .tl { display: flex; flex-direction: column; margin-top: 52px; }
-
-        .tl-row {
-          display: grid;
-          grid-template-columns: 52px 1fr;
-          gap: 24px;
-          padding: 28px 0;
-          border-bottom: 1px solid var(--sand3);
-          opacity: 0;
-          transform: translateY(18px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
+        .feature-item-text {
+          font-size: 0.95rem;
+          color: var(--gray-300);
+          line-height: 1.6;
         }
-        .tl-row:last-child { border-bottom: none; }
-        .tl-row.visible { opacity: 1; transform: translateY(0); }
+        .feature-item-text strong { color: var(--white); }
 
-        .tl-dot {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0;
-          padding-top: 4px;
-        }
-
-        .dot-circle {
-          width: 36px; height: 36px;
-          border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 0.82rem;
-          font-weight: 800;
-          flex-shrink: 0;
-          font-family: 'Manrope', sans-serif;
-        }
-
-        .dot-olive  { background: var(--olive-pale); color: var(--olive); border: 1.5px solid var(--olive-mid); }
-        .dot-burnt  { background: var(--burnt-pale); color: var(--burnt); border: 1.5px solid rgba(196,82,26,0.3); }
-
-        .tl-content h3 {
-          font-size: 1rem;
-          font-weight: 700;
-          color: var(--bark);
-          margin-bottom: 6px;
-        }
-        .tl-content p { font-size: 0.88rem; color: var(--stone); line-height: 1.75; max-width: 620px; }
-
-        .phase-label {
-          font-size: 0.68rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          font-weight: 700;
-          margin-bottom: 6px;
-        }
-        .ph-olive { color: var(--olive); }
-        .ph-burnt { color: var(--burnt); }
-
-        /* ── COMPARISON ── */
-        .compare-outer {
-          margin-top: 52px;
+        /* Feature right card */
+        .feature-card {
+          background: var(--dark2);
+          border: 1px solid rgba(255,255,255,0.08);
           border-radius: 20px;
-          overflow: hidden;
-          border: 1px solid var(--sand3);
-          overflow-x: auto;
-        }
-
-        table.cmp {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 0.88rem;
-        }
-
-        .cmp th {
-          font-size: 0.72rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          font-weight: 700;
-          padding: 16px 22px;
-          text-align: left;
-          background: var(--sand2);
-          color: var(--stone);
-          border-bottom: 1px solid var(--sand3);
-        }
-        .cmp th.sc { background: var(--olive); color: var(--white); }
-
-        .cmp td {
-          padding: 14px 22px;
-          border-bottom: 1px solid var(--sand2);
-          color: var(--stone);
-          background: var(--white);
-          font-weight: 300;
-        }
-        .cmp td:first-child { font-weight: 600; color: var(--bark); }
-        .cmp td.sc { background: var(--olive-pale); color: var(--bark); font-weight: 600; }
-        .cmp tr:last-child td { border-bottom: none; }
-
-        .yes { color: var(--olive); font-weight: 700; }
-        .no  { color: #b08060; }
-
-        /* ── REVENUE ── */
-        .rev-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-          gap: 16px;
-          margin-top: 52px;
-        }
-
-        .rev-card {
-          background: var(--white);
-          border: 1px solid var(--sand3);
-          border-radius: 20px;
-          padding: 32px 26px;
-          transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+          padding: 32px;
           position: relative;
-          overflow: hidden;
         }
-        .rev-card::before {
+        .feature-card::before {
           content: '';
           position: absolute;
-          top: 0; left: 0; right: 0;
+          top: 0;
+          left: 0;
+          right: 0;
           height: 3px;
-          background: var(--olive);
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.35s;
+          background: linear-gradient(90deg, var(--primary), var(--accent));
+          border-radius: 20px 20px 0 0;
         }
-        .rev-card:hover::before { transform: scaleX(1); }
-        .rev-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(59,47,30,0.08); }
-
-        .rev-num {
-          font-family: 'Lora', serif;
-          font-size: 2.6rem;
-          font-weight: 500;
-          color: var(--olive2);
-          line-height: 1;
-          margin-bottom: 12px;
-        }
-        .rev-card h4 { font-size: 0.92rem; font-weight: 700; color: var(--bark); margin-bottom: 6px; }
-        .rev-card p  { font-size: 0.83rem; color: var(--stone); line-height: 1.65; }
-
-        /* ── IMPACT ── */
-        .impact-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 16px;
-          margin-top: 52px;
-        }
-
-        .impact-card {
+        .fc-header {
           display: flex;
-          gap: 16px;
-          align-items: flex-start;
-          background: var(--white);
-          border: 1px solid var(--sand3);
-          border-radius: 16px;
-          padding: 24px 22px;
-          transition: transform 0.25s, border-color 0.25s;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
         }
-        .impact-card:hover { transform: translateY(-3px); border-color: var(--olive-mid); }
+        .fc-icon {
+          width: 48px;
+          height: 48px;
+          background: rgba(37,99,235,0.12);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.3rem;
+        }
+        .fc-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--white);
+        }
+        .fc-sub {
+          font-size: 0.8rem;
+          color: var(--gray-400);
+        }
 
-        .imp-ic { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
-        .impact-card h4 { font-size: 0.9rem; font-weight: 700; color: var(--bark); margin-bottom: 4px; }
-        .impact-card p  { font-size: 0.83rem; color: var(--stone); line-height: 1.6; }
+        .fc-status {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: rgba(16,185,129,0.1);
+          border: 1px solid rgba(16,185,129,0.2);
+          border-radius: 12px;
+          padding: 14px 18px;
+          margin-bottom: 20px;
+        }
+        .fc-status-dot {
+          width: 10px;
+          height: 10px;
+          background: var(--accent);
+          border-radius: 50%;
+          position: relative;
+        }
+        .fc-status-dot::after {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border-radius: 50%;
+          border: 2px solid var(--accent);
+          animation: pulse-ring 2s infinite;
+        }
+        .fc-status-text { color: var(--accent); font-size: 0.88rem; font-weight: 600; }
 
-        /* ── CTA BAND ── */
-        .cta-band {
-          background: var(--olive);
-          padding: 80px 52px;
+        .fc-checklist { display: flex; flex-direction: column; gap: 10px; }
+        .fc-check-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          background: rgba(255,255,255,0.04);
+          border-radius: 10px;
+          font-size: 0.88rem;
+          color: var(--gray-300);
+        }
+        .fc-check-icon { color: var(--accent); font-weight: 700; }
+
+        /* ── PLATFORMS ── */
+        .platforms-section {
+          padding: 80px 48px;
+          background: var(--white);
+        }
+        .platforms-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .platforms-label {
+          font-size: 0.85rem;
+          color: var(--gray-400);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          margin-bottom: 32px;
+        }
+        .platforms-row {
+          display: flex;
+          justify-content: center;
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+        .platform-chip {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 14px 28px;
+          background: var(--gray-50);
+          border: 1px solid var(--gray-200);
+          border-radius: 14px;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--gray-700);
+          transition: all 0.3s;
+        }
+        .platform-chip:hover {
+          background: var(--primary-pale);
+          border-color: var(--primary);
+          color: var(--primary);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+          padding: 100px 48px;
+          background: var(--gradient-primary);
           text-align: center;
           position: relative;
           overflow: hidden;
         }
-
-        .cta-band::before {
-          content: '🛡';
+        .cta-section::before {
+          content: '';
           position: absolute;
-          font-size: 24rem;
-          opacity: 0.05;
-          top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
+          top: -200px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 800px;
+          height: 800px;
+          background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
         }
-
-        .cta-band h2 {
-          font-family: 'Lora', serif;
-          font-size: clamp(2rem, 4.5vw, 3.4rem);
-          font-weight: 500;
+        .cta-inner {
+          max-width: 700px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+        .cta-title {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 2.8rem;
+          font-weight: 800;
           color: var(--white);
-          line-height: 1.2;
-          max-width: 620px;
-          margin: 0 auto 16px;
-          position: relative;
+          letter-spacing: -0.03em;
+          margin-bottom: 16px;
+          line-height: 1.15;
         }
-        .cta-band h2 em { font-style: italic; color: var(--olive-mid); }
-
-        .cta-band p {
-          color: rgba(254,252,249,0.7);
+        .cta-desc {
+          font-size: 1.15rem;
+          color: rgba(255,255,255,0.75);
+          margin-bottom: 40px;
+          line-height: 1.7;
+        }
+        .btn-white {
+          background: var(--white);
+          color: var(--primary);
           font-size: 1rem;
-          font-weight: 300;
-          max-width: 440px;
-          margin: 0 auto 40px;
-          position: relative;
+          font-weight: 700;
+          padding: 16px 40px;
+          border-radius: 14px;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+          border: none;
+          cursor: pointer;
+        }
+        .btn-white:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         }
 
         /* ── FOOTER ── */
-        .landing-footer {
-          background: var(--bark);
-          padding: 44px 52px;
+        .sc-footer {
+          padding: 40px 48px;
+          background: var(--gray-900);
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .footer-logo {
-          font-family: 'Manrope', sans-serif;
-          font-size: 1.2rem;
-          font-weight: 800;
-          color: var(--sand);
-          letter-spacing: -0.02em;
-        }
-        .footer-logo span { color: var(--olive-mid); }
-
-        .footer-r {
-          font-size: 0.78rem;
-          color: var(--stone2);
-          text-align: right;
-          line-height: 1.8;
-        }
-
-        /* ── PLATFORMS STRIP ── */
-        .platforms-strip {
-          margin-top: 40px;
-          background: var(--white);
-          border: 1px solid var(--sand3);
-          border-radius: 20px;
-          padding: 22px 24px;
-          box-shadow: 0 4px 20px rgba(59,47,30,0.07);
-          animation: riseUp 0.8s 0.32s ease both;
-        }
-
-        .platforms-label {
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--stone);
-          margin-bottom: 16px;
-          display: flex;
           align-items: center;
-          gap: 8px;
+          border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .platforms-label::before {
-          content: '';
-          display: inline-block;
-          width: 20px; height: 2px;
-          background: var(--olive);
-          border-radius: 2px;
-        }
-
-        .platforms-row {
-          display: flex;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .platform-chip {
-          background: var(--canvas);
-          border: 1.5px solid var(--sand3);
-          border-radius: 14px;
-          padding: 12px 20px;
-          transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s, background 0.2s;
-          cursor: pointer;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 5px;
-          min-width: 88px;
-        }
-        .platform-chip:hover {
-          border-color: var(--olive-mid);
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(59,47,30,0.1);
-          background: var(--white);
-        }
-
-        .p-icon {
-          font-size: 1.4rem;
-          line-height: 1;
-        }
-
-        .p-logo {
-          font-weight: 800;
+        .footer-copy {
           font-size: 0.82rem;
-          letter-spacing: -0.01em;
-          line-height: 1;
+          color: var(--gray-500);
         }
-
-        .p-logo.amazon   { color: #e47911; font-family: 'Georgia', serif; }
-        .p-logo.flipkart { color: #2874f0; font-family: 'Manrope', sans-serif; }
-        .p-logo.meesho   { color: #9b2de8; font-family: 'Manrope', sans-serif; font-style: italic; }
-        .p-logo.myntra   { color: #ff3e6c; font-family: 'Manrope', sans-serif; font-weight: 700; }
-        .p-logo.nykaa    { color: #fc2779; font-family: 'Manrope', sans-serif; }
-
-        .platform-chip.see-more {
-          background: var(--olive-pale);
-          border-color: var(--olive-mid);
-          border-style: dashed;
+        .footer-links {
+          display: flex;
+          gap: 24px;
         }
-        .platform-chip.see-more:hover { background: var(--olive-pale); border-color: var(--olive); border-style: dashed; }
-
-        .see-more-text {
-          font-size: 0.85rem;
-          font-weight: 800;
-          color: var(--olive2);
-          letter-spacing: 0.02em;
+        .footer-link {
+          font-size: 0.82rem;
+          color: var(--gray-400);
+          text-decoration: none;
+          transition: color 0.2s;
         }
-        .see-more-sub {
-          font-size: 0.7rem;
-          color: var(--olive);
-          font-weight: 500;
-        }
+        .footer-link:hover { color: var(--white); }
 
         /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
-          .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; }
-          .landing-nav { padding: 16px 24px; }
+        @media (max-width: 768px) {
+          .sc-nav { padding: 14px 20px; }
           .nav-links .nav-link { display: none; }
-          .sec, .sec-full { padding: 72px 24px; }
-          .cta-band { padding: 64px 24px; }
-          .landing-footer { padding: 36px 24px; }
-          .two-col { grid-template-columns: 1fr; }
+          .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+          .hero-title { font-size: 2.4rem; }
+          .hero-section { padding: 120px 20px 60px; }
+          .hero-btns { flex-direction: column; }
+          .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+          .stat-num { font-size: 1.8rem; }
+          .process-grid { grid-template-columns: 1fr; }
+          .how-section, .feature-section, .platforms-section, .cta-section { padding: 60px 20px; }
+          .feature-inner { grid-template-columns: 1fr; }
+          .section-title, .feature-title, .cta-title { font-size: 1.8rem; }
+          .sc-footer { flex-direction: column; gap: 16px; text-align: center; }
         }
-
-        .red-em { font-style: italic; color: var(--burnt); }
       `}</style>
 
-      {/* NAV */}
-      <nav className="landing-nav">
-        <Link href="/" className="logo">
-          Shield<span>Cart</span><sup>®</sup>
-        </Link>
-        <div className="nav-links">
-          <Link href="/login" className="nav-link">Log in</Link>
-          <Link href="/signup" className="nav-pill">Get Started</Link>
-        </div>
-      </nav>
-
-      {/* HERO */}
-      <section className="hero">
-        <div className="hero-left">
-          <div className="hero-tag">Consumer Protection Platform</div>
-          <h1>
-            Every Product.<br />
-            <em>Inspected.</em><br />
-            Before It<br />
-            <span className="accent">Reaches You.</span>
-          </h1>
-          <p className="hero-body">
-            ShieldCart sits between online marketplaces and you — physically inspecting every product before delivery so you never receive defective, counterfeit, or wrong items. Your safety, guaranteed.
-          </p>
-          <div className="hero-actions">
-            <Link href="/signup" className="btn-olive" style={{ textDecoration: 'none' }}>
-              See How It Works
-            </Link>
-            <a href="#problem" className="btn-soft" style={{ textDecoration: 'none' }}>
-              Our Story ↓
-            </a>
+      <div className="lp-body">
+        {/* NAV */}
+        <nav className="sc-nav">
+          <Link href="/" className="sc-logo">
+            <div className="sc-logo-icon">🛡️</div>
+            <div className="sc-logo-text">Shield<span>Cart</span></div>
+          </Link>
+          <div className="nav-links">
+            <a href="#process" className="nav-link">How It Works</a>
+            <a href="#features" className="nav-link">Features</a>
+            <a href="#platforms" className="nav-link">Platforms</a>
+            <Link href="/login" className="nav-link">Log In</Link>
+            <Link href="/signup" className="nav-cta">Shop Securely</Link>
           </div>
+        </nav>
 
-          {/* PLATFORMS STRIP */}
-          <div className="platforms-strip">
-            <div className="platforms-label">Shop through your favourite platforms</div>
+        {/* HERO */}
+        <section className="hero-section">
+          <div className="hero-inner">
+            <div>
+              <div className="hero-badge">
+                <span className="hero-badge-dot" />
+                100% Buyer Protection Guaranteed
+              </div>
+              <h1 className="hero-title">
+                Secure Online Shopping with{" "}
+                <span className="blue">Product</span>{" "}
+                <span className="green">Verification</span>
+              </h1>
+              <p className="hero-desc">
+                ShieldCart is your trusted intermediary that physically inspects every product before it reaches you — ensuring authenticity, quality, and your complete peace of mind.
+              </p>
+              <div className="hero-btns">
+                <Link href="/signup" className="btn-primary">
+                  Start Shopping Securely →
+                </Link>
+                <Link href="/dashboard" className="btn-outline">
+                  Track Verification
+                </Link>
+              </div>
+            </div>
+
+            {/* Hero Card */}
+            <div className="hero-card">
+              <div className="hero-card-header">
+                <div className="hero-card-title">Order Verification</div>
+                <div className="hero-card-badge">
+                  <span>✓</span> Verified Authentic
+                </div>
+              </div>
+
+              <div className="verification-item">
+                <div className="v-icon v-icon-blue">📦</div>
+                <div>
+                  <div className="v-label">Package Received at Hub</div>
+                  <div className="v-sub">Sealed condition documented</div>
+                </div>
+              </div>
+              <div className="verification-item">
+                <div className="v-icon v-icon-green">🔍</div>
+                <div>
+                  <div className="v-label">Physical Inspection Complete</div>
+                  <div className="v-sub">Serial & authenticity verified</div>
+                </div>
+              </div>
+              <div className="verification-item">
+                <div className="v-icon v-icon-amber">📋</div>
+                <div>
+                  <div className="v-label">Certificate Generated</div>
+                  <div className="v-sub">Inspection report attached</div>
+                </div>
+              </div>
+
+              <div className="hero-progress">
+                <div className="hero-progress-fill" />
+              </div>
+              <div className="hero-progress-label">
+                <span>Verification Progress</span>
+                <span>85%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* STATS */}
+        <section className="stats-bar fade-up">
+          <div className="stats-inner">
+            {[
+              { num: "50K+", label: "Products Inspected" },
+              { num: "99.7%", label: "Accuracy Rate" },
+              { num: "200+", label: "Certified Inspectors" },
+              { num: "4.9★", label: "Customer Rating" },
+            ].map((s) => (
+              <div key={s.label} className="stat-item">
+                <div className="stat-num">{s.num}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section id="process" className="how-section" ref={processRef}>
+          <div className="section-inner">
+            <div className="section-badge">✦ Our Process</div>
+            <h2 className="section-title">How ShieldCart Works</h2>
+            <p className="section-desc">
+              A simple three-step process that ensures every product you buy online is genuine, undamaged, and exactly what you ordered.
+            </p>
+
+            <div className="process-grid">
+              {[
+                {
+                  icon: "🚚",
+                  iconClass: "p-icon-blue",
+                  step: "Step 01",
+                  title: "Interception at Hub",
+                  desc: "Your order is delivered to our secure inspection hub instead of directly to you. Every package is sorted, logged, and prepared for inspection.",
+                },
+                {
+                  icon: "🔬",
+                  iconClass: "p-icon-green",
+                  step: "Step 02",
+                  title: "Rigorous Inspection",
+                  desc: "Our certified inspectors verify serial numbers, check seals, test functionality, compare against listings, and document everything with timestamped photos.",
+                },
+                {
+                  icon: "✅",
+                  iconClass: "p-icon-purple",
+                  step: "Step 03",
+                  title: "Guaranteed Safe Delivery",
+                  desc: "Verified products are repackaged with our ShieldCart Verified seal and dispatched to you with a full digital inspection certificate.",
+                },
+              ].map((card) => (
+                <div key={card.step} className="process-card fade-up">
+                  <div className={`process-icon ${card.iconClass}`}>{card.icon}</div>
+                  <div className="process-step">{card.step}</div>
+                  <div className="process-title">{card.title}</div>
+                  <div className="process-desc">{card.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURE SECTION */}
+        <section id="features" className="feature-section">
+          <div className="feature-inner">
+            <div className="fade-up">
+              <div className="feature-badge">✦ Why ShieldCart</div>
+              <h2 className="feature-title">
+                Never Receive a Fake Product Again
+              </h2>
+              <p className="feature-desc">
+                Every order goes through our rigorous verification process. If a product fails inspection, we handle the return and refund — you never have to.
+              </p>
+
+              <div className="feature-list">
+                {[
+                  { title: "Payment Escrow Protection", desc: "Your money is secured until the product passes our inspection. No risk." },
+                  { title: "Instant Return Handling", desc: "Failed inspections trigger automatic returns. You never receive a defective product." },
+                  { title: "Digital Inspection Reports", desc: "Every product comes with timestamped photo evidence and a downloadable certificate." },
+                  { title: "AI-Powered Shopping Assistant", desc: "ShieldBot helps you compare products, analyse reviews, and make confident purchases." },
+                ].map((item) => (
+                  <div key={item.title} className="feature-item">
+                    <div className="feature-check">✓</div>
+                    <div className="feature-item-text">
+                      <strong>{item.title}</strong><br />
+                      {item.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="feature-card fade-up">
+              <div className="fc-header">
+                <div className="fc-icon">🛡️</div>
+                <div>
+                  <div className="fc-title">MacBook Pro 16&quot;</div>
+                  <div className="fc-sub">Ordered from Amazon • ₹2,49,900</div>
+                </div>
+              </div>
+
+              <div className="fc-status">
+                <div className="fc-status-dot" />
+                <span className="fc-status-text">✓ Verified Authentic</span>
+              </div>
+
+              <div className="fc-checklist">
+                {[
+                  "Packaging sealed & undamaged",
+                  "Serial number matches listing",
+                  "All accessories present",
+                  "No cosmetic defects found",
+                  "Certificate generated",
+                ].map((item) => (
+                  <div key={item} className="fc-check-item">
+                    <span className="fc-check-icon">✓</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PLATFORMS */}
+        <section id="platforms" className="platforms-section fade-up">
+          <div className="platforms-inner">
+            <div className="platforms-label">Works with all major marketplaces</div>
             <div className="platforms-row">
-              <Link href="/order/new?platform=Amazon" className="platform-chip" style={{ textDecoration: 'none' }}>
-                <div className="p-icon">🛒</div>
-                <span className="p-logo amazon">amazon</span>
-              </Link>
-              <Link href="/order/new?platform=Flipkart" className="platform-chip" style={{ textDecoration: 'none' }}>
-                <div className="p-icon">🏷️</div>
-                <span className="p-logo flipkart">Flipkart</span>
-              </Link>
-              <Link href="/order/new?platform=Meesho" className="platform-chip" style={{ textDecoration: 'none' }}>
-                <div className="p-icon">🛍️</div>
-                <span className="p-logo meesho">meesho</span>
-              </Link>
-              <Link href="/order/new?platform=Myntra" className="platform-chip" style={{ textDecoration: 'none' }}>
-                <div className="p-icon">👗</div>
-                <span className="p-logo myntra">myntra</span>
-              </Link>
-              <Link href="/order/new?platform=Nykaa" className="platform-chip" style={{ textDecoration: 'none' }}>
-                <div className="p-icon">💄</div>
-                <span className="p-logo nykaa">nykaa</span>
-              </Link>
+              {[
+                { name: "Amazon", emoji: "🛒" },
+                { name: "Flipkart", emoji: "📱" },
+                { name: "Meesho", emoji: "🛍️" },
+                { name: "Myntra", emoji: "👗" },
+                { name: "Nykaa", emoji: "💄" },
+              ].map((p) => (
+                <div key={p.name} className="platform-chip">
+                  <span>{p.emoji}</span>
+                  {p.name}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="hero-right">
-          <div className="hero-stat-card">
-            <div className="sc-icon icon-olive">🔍</div>
-            <div>
-              <div className="sc-num">100<span>%</span></div>
-              <div className="sc-label">Products physically inspected before delivery</div>
-            </div>
+        {/* CTA */}
+        <section className="cta-section fade-up">
+          <div className="cta-inner">
+            <h2 className="cta-title">
+              Shop Online With Complete Confidence
+            </h2>
+            <p className="cta-desc">
+              Join thousands of smart shoppers who trust ShieldCart to verify every purchase. Your product quality guarantee starts here.
+            </p>
+            <Link href="/signup" className="btn-white">
+              🛡️ Start Shopping Securely
+            </Link>
           </div>
-          <div className="hero-stat-card">
-            <div className="sc-icon icon-burnt">🔄</div>
-            <div>
-              <div className="sc-num"><span className="red">2×</span></div>
-              <div className="sc-label">Protection — consumers and sellers both covered</div>
-            </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="sc-footer">
+          <div className="footer-copy">
+            © 2026 ShieldCart. Product Inspection & Consumer Protection Platform.
           </div>
-          <div className="hero-stat-card">
-            <div className="sc-icon icon-sand">🛒</div>
-            <div>
-              <div className="sc-num">All</div>
-              <div className="sc-label">Major platforms — Amazon, Flipkart, Meesho & more</div>
-            </div>
+          <div className="footer-links">
+            <a href="#" className="footer-link">Privacy Policy</a>
+            <a href="#" className="footer-link">Terms of Service</a>
+            <a href="#" className="footer-link">Contact</a>
           </div>
-        </div>
-      </section>
-
-      <div className="ruled"></div>
-
-      {/* PROBLEM */}
-      <section id="problem" className="sec">
-        <div className="tag-chip chip-burnt">The Problem</div>
-        <h2 className="sec-h">Online Shopping Has a<br /><span className="red-em">Trust Problem</span></h2>
-        <p className="sec-p">Buyers receive fakes. Sellers face fraudulent returns. Platforms stay neutral. No one is protecting either side.</p>
-
-        <div className="problem-grid">
-          <div className="problem-card">
-            <div className="prob-icon">🎭</div>
-            <h3>Counterfeit Products</h3>
-            <p>Fake goods listed under genuine brand names reach buyers every day. Platforms use algorithms — not physical checks.</p>
-          </div>
-          <div className="problem-card">
-            <div className="prob-icon">📦</div>
-            <h3>Defective Deliveries</h3>
-            <p>Damaged, wrong, or substandard items are delivered with no independent verification before handover.</p>
-          </div>
-          <div className="problem-card">
-            <div className="prob-icon">🔄</div>
-            <h3>Return Fraud</h3>
-            <p>Customers swap genuine items with fakes before returning, or falsely claim non-delivery — sellers are left with no recourse.</p>
-          </div>
-          <div className="problem-card">
-            <div className="prob-icon">⚖️</div>
-            <h3>No Neutral Referee</h3>
-            <p>When buyer and seller dispute a transaction, there&#39;s no evidence-backed system to settle it fairly.</p>
-          </div>
-        </div>
-      </section>
-
-      <div className="ruled"></div>
-
-      {/* COMPLETE PROTECTION */}
-      <section id="solution" className="sec">
-        <div className="tag-chip chip-olive">Our Core Strength</div>
-        <h2 className="sec-h">Complete Protection<br /><em>At Every Step</em></h2>
-        <p className="sec-p">From the moment you place an order to the moment it reaches your door — ShieldCart ensures you only receive genuine, quality-checked products.</p>
-
-        <div className="two-col">
-          <div className="ts-box consumer">
-            <div className="tag-chip chip-olive" style={{ marginBottom: '14px' }}>Before Delivery</div>
-            <h3>Every Product Inspected</h3>
-            <small>What happens before your order reaches you</small>
-            <div className="ts-items">
-              <div className="ts-item"><span className="ts-dot">✓</span>Physical inspection before every delivery — no defective products reach you</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Authenticity verified against serial numbers and brand markers</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Every product photographed and documented for your records</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Timestamped inspection certificate delivered with every order</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>If anything slips through our check — we take full accountability</div>
-            </div>
-          </div>
-
-          <div className="ts-box seller">
-            <div className="tag-chip chip-burnt" style={{ marginBottom: '14px' }}>Hassle-Free Returns</div>
-            <h3>Easy & Verified Returns</h3>
-            <small>How we make returns effortless for you</small>
-            <div className="ts-items">
-              <div className="ts-item"><span className="ts-dot">✓</span>Request returns instantly from your dashboard — no marketplace runaround</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Our inspection archive proves the product condition at delivery</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Faster refund processing with verified evidence on your side</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Full photographic proof available for any dispute resolution</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>ShieldCart handles the entire return process — you just sit back</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="ruled"></div>
-
-      {/* PROCESS */}
-      <section id="process" className="sec" style={{ background: 'var(--sand)', maxWidth: '100%', padding: '96px 52px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div className="tag-chip chip-olive">How It Works</div>
-          <h2 className="sec-h">A Complete Chain<br /><em>of Custody</em></h2>
-          <p className="sec-p">Every product has a documented, unbroken record from marketplace to customer door and back. Nothing goes unaccounted for.</p>
-
-          <div className="tl" id="tl" ref={tlRef}>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-olive">1</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-olive">Order Phase</div>
-                <h3>Customer Orders Through ShieldCart</h3>
-                <p>Tell us what you want from Amazon, Flipkart, Meesho — any marketplace. We place the order with delivery to our inspection hub, not your home.</p>
-              </div>
-            </div>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-olive">2</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-olive">Evidence Phase</div>
-                <h3>Package Arrives — Proof Created Immediately</h3>
-                <p>The sealed package is photographed in full — outer box, seal condition, inner packaging, and product from every angle. Timestamped and archived. This is your legal proof-of-original-condition record.</p>
-              </div>
-            </div>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-olive">3</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-olive">Inspection Phase</div>
-                <h3>Physical Quality & Authenticity Check</h3>
-                <p>Our trained inspectors check the product against the listing — defects, counterfeit markers, wrong items, missing accessories. Every check logged digitally with photos.</p>
-              </div>
-            </div>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-olive">4</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-olive">Delivery Phase</div>
-                <h3>Verified → Dispatched with Certificate</h3>
-                <p>Products that pass are repackaged with our ShieldCart Verified seal and sent to you with a full digital inspection certificate — every check documented with timestamps.</p>
-              </div>
-            </div>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-burnt">5</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-burnt">Return Phase</div>
-                <h3>Returns Come to Us First — Always</h3>
-                <p>Any return is routed back to our hub. We verify: same product? Same serial number? Damage genuine or customer-caused? We cross-check our pre-delivery archive before approving anything.</p>
-              </div>
-            </div>
-            <div className="tl-row">
-              <div className="tl-dot"><div className="dot-circle dot-burnt">6</div></div>
-              <div className="tl-content">
-                <div className="phase-label ph-burnt">Resolution Phase</div>
-                <h3>Evidence-Based Arbitration — Always Fair</h3>
-                <p>Legitimate returns processed instantly. Fraudulent claims blocked and documented. Repeat offenders blacklisted on both sides. Every resolution backed by photographic evidence — no guesswork, no bias.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* COMPARISON */}
-      <section className="sec">
-        <div className="tag-chip chip-sand">Vs. The Market</div>
-        <h2 className="sec-h">Nothing Else<br /><em>Covers All of This</em></h2>
-        <p className="sec-p">ShieldCart fills a gap no marketplace, logistics firm, or consumer forum has addressed.</p>
-
-        <div className="compare-outer">
-          <table className="cmp">
-            <thead>
-              <tr>
-                <th>Capability</th>
-                <th>Amazon / Flipkart</th>
-                <th className="sc">ShieldCart ✦</th>
-                <th>Consumer Courts</th>
-                <th>3PL Logistics</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Physical Inspection Before Delivery</td>
-                <td><span className="no">✗</span> None</td>
-                <td className="sc"><span className="yes">✓</span> Every order</td>
-                <td><span className="no">✗</span> None</td>
-                <td><span className="no">✗</span> None</td>
-              </tr>
-              <tr>
-                <td>Return Authentication</td>
-                <td><span className="no">✗</span> Not verified</td>
-                <td className="sc"><span className="yes">✓</span> Photo-matched</td>
-                <td><span className="no">✗</span> None</td>
-                <td><span className="no">✗</span> None</td>
-              </tr>
-              <tr>
-                <td>Seller Fraud Protection</td>
-                <td><span className="no">✗</span> Weak</td>
-                <td className="sc"><span className="yes">✓</span> Full evidence</td>
-                <td>Partial</td>
-                <td><span className="no">✗</span> None</td>
-              </tr>
-              <tr>
-                <td>Handles Returns for Consumer</td>
-                <td><span className="no">✗</span> Self-service</td>
-                <td className="sc"><span className="yes">✓</span> We manage it</td>
-                <td><span className="no">✗</span> No</td>
-                <td><span className="no">✗</span> No</td>
-              </tr>
-              <tr>
-                <td>Chain of Custody Documentation</td>
-                <td><span className="no">✗</span> None</td>
-                <td className="sc"><span className="yes">✓</span> Full record</td>
-                <td><span className="no">✗</span> None</td>
-                <td><span className="no">✗</span> None</td>
-              </tr>
-              <tr>
-                <td>Works Across All Platforms</td>
-                <td><span className="no">✗</span> One only</td>
-                <td className="sc"><span className="yes">✓</span> All platforms</td>
-                <td>Case by case</td>
-                <td><span className="no">✗</span> No</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <div className="ruled"></div>
-
-      {/* REVENUE */}
-      <section id="model" className="sec" style={{ background: 'var(--sand)', maxWidth: '100%', padding: '96px 52px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div className="tag-chip chip-olive">Business Model</div>
-          <h2 className="sec-h">Built to Scale,<br /><em>Multiple Streams</em></h2>
-
-          <div className="rev-row">
-            <div className="rev-card">
-              <div className="rev-num">₹99</div>
-              <h4>Per-Order Fee</h4>
-              <p>Flat inspection and verification charge per order. Transparent and predictable.</p>
-            </div>
-            <div className="rev-card">
-              <div className="rev-num">₹499</div>
-              <h4>Monthly Plan</h4>
-              <p>Unlimited inspections for frequent shoppers across all platforms.</p>
-            </div>
-            <div className="rev-card">
-              <div className="rev-num">B2B</div>
-              <h4>Seller Partner Plans</h4>
-              <p>Sellers pay ShieldCart to serve as their certified return-authentication partner.</p>
-            </div>
-            <div className="rev-card">
-              <div className="rev-num">API</div>
-              <h4>Platform Licensing</h4>
-              <p>License our inspection and dispute infrastructure to smaller marketplaces and D2C brands.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="ruled"></div>
-
-      {/* IMPACT */}
-      <section className="sec">
-        <div className="tag-chip chip-olive">Social Impact</div>
-        <h2 className="sec-h">Making Commerce<br /><em>Truly Fair</em></h2>
-        <p className="sec-p">Every inspection, every verified return, every resolved dispute builds a more honest digital marketplace for everyone in India.</p>
-
-        <div className="impact-grid">
-          <div className="impact-card"><div className="imp-ic">📉</div><div><h4>90% Fewer Counterfeit Deliveries</h4><p>Physical checks catch what algorithms never can.</p></div></div>
-          <div className="impact-card"><div className="imp-ic">🔒</div><div><h4>Eliminate Return Fraud</h4><p>Photo evidence makes fraudulent return claims impossible.</p></div></div>
-          <div className="impact-card"><div className="imp-ic">📊</div><div><h4>Seller & Buyer Accountability Data</h4><p>Track quality and fraud patterns to drive ecosystem improvement.</p></div></div>
-          <div className="impact-card"><div className="imp-ic">👷</div><div><h4>Local Job Creation</h4><p>Inspection hubs require trained staff — direct employment at scale.</p></div></div>
-          <div className="impact-card"><div className="imp-ic">🌱</div><div><h4>Fewer Unnecessary Returns</h4><p>Catching defects early reduces shipping waste and emissions.</p></div></div>
-          <div className="impact-card"><div className="imp-ic">⚖️</div><div><h4>Evidence-Based, Bias-Free Commerce</h4><p>Every dispute resolved with documented proof — not platform politics.</p></div></div>
-        </div>
-      </section>
-
-      {/* CTA BAND */}
-      <div className="cta-band">
-        <h2>Shop Online With <em>Complete Confidence</em></h2>
-        <p>ShieldCart is not just a service — it&#39;s your personal product quality guarantee for every online purchase.</p>
-        <Link href="/signup" className="btn-white" style={{ textDecoration: 'none' }}>
-          🛡 Start Shopping Safely
-        </Link>
+        </footer>
       </div>
-
-      {/* FOOTER */}
-      <footer className="landing-footer">
-        <div className="footer-logo">Shield<span>Cart</span></div>
-        <div className="footer-r">S3 Consumer Safety Track<br />Product Inspection & Consumer Protection Platform</div>
-      </footer>
     </>
   );
 }
