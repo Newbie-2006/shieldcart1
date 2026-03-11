@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 setOrders((prev) =>
                     prev.map((o) => o.id === orderId ? { ...o, status: "cancelled", payment_status: "refunded" } : o)
                 );
-                alert("Order cancelled. Refund of ₹" + (data.refundAmount || 0).toLocaleString("en-IN") + " will be processed.");
+                alert("Order cancelled. Refund of ₹" + (data.refundAmount || 0).toLocaleString("en-IN") + " has been initiated.");
             } else {
                 alert(data.error || "Failed to cancel order");
             }
@@ -310,7 +310,7 @@ export default function DashboardPage() {
                                             color: order.payment_status === "refunded" ? "#DC2626" : order.payment_status === "cod" ? "#C2410C" : "#2563EB",
                                             padding: "4px 10px", borderRadius: "8px",
                                         }}>
-                                            {order.payment_status === "cod" ? "💵 COD" : order.payment_status === "refunded" ? "↩️ Refunded" : "💳 Paid"}
+                                            {order.payment_status === "cod" ? "💵 COD" : order.payment_status === "refunded" ? "↩️ Refund Initiated" : "💳 Paid"}
                                         </span>
                                     )}
                                 </div>
