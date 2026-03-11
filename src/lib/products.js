@@ -89,66 +89,38 @@ const BRANDS = {
 const PLATFORMS_LIST = ["Amazon", "Flipkart", "Meesho", "Myntra", "Nykaa"];
 const BADGES = ["Best Seller", "Top Rated", "Premium", "Hot", "New", null, null, null, null, null];
 
-const IMG_BASE = "https://images.unsplash.com/photo-";
-const CATEGORY_IMAGES = {
-    phones: [
-        `${IMG_BASE}1511707171634-5f897ff02aa9?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1592750475338-74b7b21085ab?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1565849904461-04a58ad377e0?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1580910051074-3eb694886f1b?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1512054502232-10a0a035d672?w=400&h=400&fit=crop`,
-    ],
-    laptops: [
-        `${IMG_BASE}1496181133206-80ce9b88a853?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1525547719351-1f3e5c1e863c?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1588872657578-7efd1f1555ed?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1517336714731-489689fd1ca8?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1541807084-5c52b6b3adef?w=400&h=400&fit=crop`,
-    ],
-    audio: [
-        `${IMG_BASE}1505740420928-5e560c06d30e?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1590658268037-6bf12f032741?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1583394838336-acd977736f90?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1546435770-a3e426bf472b?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1572536147248-ac59a8abfa4b?w=400&h=400&fit=crop`,
-    ],
-    tablets: [
-        `${IMG_BASE}1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1561154464-82e9aab32564?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1585790050230-5dd28404ccb9?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1632882765546-1ee75f53becb?w=400&h=400&fit=crop`,
-    ],
-    watches: [
-        `${IMG_BASE}1523275335684-37898b6baf30?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1546868871-af0de0e3975e?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1579586337278-3befd40fd17a?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop`,
-    ],
-    cameras: [
-        `${IMG_BASE}1516035069371-29a1b244cc32?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1502920917128-1aa500764bed?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1617005082133-0c9768c78e22?w=400&h=400&fit=crop`,
-    ],
-    gaming: [
-        `${IMG_BASE}1606144042614-b2417e99c4e3?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1578303512597-81e6cc155b3e?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1625805866449-3589be0adcea?w=400&h=400&fit=crop`,
-    ],
-    appliances: [
-        `${IMG_BASE}1556909114-f6e7ad7d3136?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1585771724684-38269d6639fd?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1584568694244-14fbdf83bd30?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1558618666-fcd25c85f82e?w=400&h=400&fit=crop`,
-    ],
-    beauty: [
-        `${IMG_BASE}1596462502278-27bfdc403348?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1571781926291-c477ebfd024b?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop`,
-        `${IMG_BASE}1512496015851-a90fb38ba796?w=400&h=400&fit=crop`,
-    ],
+// Reliable image seeds per category (picsum.photos always works)
+const CATEGORY_IMAGE_SEEDS = {
+    phones: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    laptops: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    audio: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    tablets: [31, 32, 33, 34, 35, 36, 37, 38],
+    watches: [41, 42, 43, 44, 45, 46, 47, 48],
+    cameras: [51, 52, 53, 54, 55, 56, 57, 58],
+    gaming: [61, 62, 63, 64, 65, 66, 67, 68],
+    appliances: [71, 72, 73, 74, 75, 76, 77, 78],
+    beauty: [81, 82, 83, 84, 85, 86, 87, 88],
 };
+
+// Generate REAL search URLs for each platform
+function getPlatformSearchUrl(platform, brand, model) {
+    const query = `${brand} ${model}`.replace(/[()\"]/g, '').trim();
+    const encoded = encodeURIComponent(query);
+    switch (platform) {
+        case "Amazon":
+            return `https://www.amazon.in/s?k=${encoded}`;
+        case "Flipkart":
+            return `https://www.flipkart.com/search?q=${encoded}`;
+        case "Meesho":
+            return `https://www.meesho.com/search?q=${encoded}`;
+        case "Myntra":
+            return `https://www.myntra.com/${encoded.replace(/%20/g, '-')}`;
+        case "Nykaa":
+            return `https://www.nykaa.com/search/result/?q=${encoded}`;
+        default:
+            return `https://www.amazon.in/s?k=${encoded}`;
+    }
+}
 
 // Deterministic seeded random
 function seededRandom(seed) {
@@ -164,7 +136,7 @@ export function generateProducts() {
 
     for (const category of categories) {
         const brandList = BRANDS[category];
-        const images = CATEGORY_IMAGES[category] || CATEGORY_IMAGES.phones;
+        const imgSeeds = CATEGORY_IMAGE_SEEDS[category] || CATEGORY_IMAGE_SEEDS.phones;
 
         for (const { brand, models, priceRange } of brandList) {
             // Determine which platforms this brand appears on
@@ -183,11 +155,11 @@ export function generateProducts() {
                 // Price based on position within range
                 const priceFraction = mi / Math.max(models.length - 1, 1);
                 const basePrice = Math.round(priceRange[0] + (priceRange[1] - priceRange[0]) * (1 - priceFraction));
-                const price = Math.round(basePrice / 10) * 10 - (basePrice > 10000 ? 1 : 0); // e.g., 67999
-                const mrpMultiplier = 1.1 + rand * 0.2; // 10-30% markup for MRP
+                const price = Math.round(basePrice / 10) * 10 - (basePrice > 10000 ? 1 : 0);
+                const mrpMultiplier = 1.1 + rand * 0.2;
                 const mrp = Math.round((price * mrpMultiplier) / 100) * 100 - 1;
 
-                // Platform — distribute across platforms
+                // Platform
                 const platIdx = (id + mi) % allowedPlatforms.length;
                 const platform = allowedPlatforms[platIdx];
 
@@ -203,9 +175,9 @@ export function generateProducts() {
                 // Verified
                 const verified = seededRandom(seed + 5) > 0.35;
 
-                // Image
-                const imgIdx = (id + mi * 3) % images.length;
-                const imageUrl = images[imgIdx];
+                // Image — use picsum with deterministic seed per product
+                const imgSeed = imgSeeds[(id + mi) % imgSeeds.length];
+                const imageUrl = `https://picsum.photos/seed/sc${category}${imgSeed}${mi}/400/400`;
 
                 products.push({
                     id: id++,
@@ -217,7 +189,7 @@ export function generateProducts() {
                     imageUrl,
                     rating,
                     reviews,
-                    url: `https://www.${platform.toLowerCase()}.${platform === "Amazon" ? "in" : "com"}/${encodeURIComponent(brand + " " + model).replace(/%20/g, "-")}`,
+                    url: getPlatformSearchUrl(platform, brand, model),
                     badge,
                     verified,
                     brand,
@@ -230,3 +202,4 @@ export function generateProducts() {
 }
 
 export const ALL_PRODUCTS = generateProducts();
+
