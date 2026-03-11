@@ -52,6 +52,9 @@ export default function AdminPage() {
     const [selectedInspector, setSelectedInspector] = useState("");
     const [statusModal, setStatusModal] = useState(null);
     const [newStatus, setNewStatus] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [selectedOrders, setSelectedOrders] = useState([]);
 
     const fetchOrders = async () => {
         const { data } = await supabase.from("orders").select("*, user:profiles!orders_user_id_fkey(full_name, email), inspector:profiles!orders_inspector_id_fkey(full_name)").order("created_at", { ascending: false });
@@ -146,17 +149,98 @@ export default function AdminPage() {
 
     const tabs = [
         { key: "orders", label: "Orders", icon: "📦", count: orders.length },
+        { key: "analytics", label: "Analytics", icon: "📊", count: null },
+        { key: "activity", label: "Activity", icon: "🕐", count: null },
         { key: "inspections", label: "Inspections", icon: "🔍", count: inspections.length },
         { key: "returns", label: "Returns", icon: "🔄", count: returns.length },
         { key: "inspectors", label: "Inspectors", icon: "👤", count: inspectors.length },
         { key: "blacklist", label: "Blacklist", icon: "🚫", count: blacklist.length },
     ];
 
+    const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.price) || 0), 0);
+    const totalFees = orders.reduce((sum, o) => sum + (Number(o.shieldcart_fee) || 0), 0);
+    const deliveredCount = orders.filter(o => o.status === "delivered").length;
+    const cancelledCount = orders.filter(o => o.status === "cancelled").length;
+    const codOrders = orders.filter(o => o.payment_status === "cod").length;
+    const paidOrders = orders.filter(o => o.payment_status === "paid").length;
+
+    const platformBreakdown = orders.reduce((acc, o) => {
+        acc[o.platform] = (acc[o.platform] || 0) + 1;
+        return acc;
+    }, {});
+
+    const statusBreakdown = orders.reduce((acc, o) => {
+        acc[o.status] = (acc[o.status] || 0) + 1;
+        return acc;
+    }, {});
+
+    const filteredOrders = orders.filter(o => {
+        const matchSearch = !searchQuery || 
+            o.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            o.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            o.user?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            o.id?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchStatus = statusFilter === "all" || o.status === statusFilter;
+        return matchSearch && matchStatus;
+    });
+
+    const recentActivity = [...orders]
+        .sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at))
+        .slice(0, 15)
+        .map(o => ({
+            id: o.id,
+            product: o.product_name,
+            status: o.status,
+            customer: o.user?.full_name || "Unknown",
+            time: o.updated_at || o.created_at,
+            payment: o.payment_status,
+            platform: o.platform,
+        }));
+
+    const handleBulkStatus = async (status) => {
+        if (selectedOrders.length === 0) { alert("Select orders first"); return; }
+        if (!confirm(`Update ${selectedOrders.length} orders to "${status}"?`)) return;
+        for (const orderId of selectedOrders) {
+            await fetch(`/api/orders/${orderId}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status }),
+            });
+        }
+        await fetchAll();
+        setSelectedOrders([]);
+    };
+
+    const exportCSV = () => {
+        const headers = ["Order ID", "Product", "Platform", "Customer", "Email", "Price", "Fee", "Status", "Payment", "Date"];
+        const rows = orders.map(o => [
+            o.id, o.product_name, o.platform, o.user?.full_name || "", o.user?.email || "",
+            o.price, o.shieldcart_fee, o.status, o.payment_status,
+            new Date(o.created_at).toLocaleDateString("en-IN"),
+        ]);
+        const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `shieldcart-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+    };
+
+    const toggleOrderSelection = (orderId) => {
+        setSelectedOrders(prev => 
+            prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]
+        );
+    };
+
     const statCards = [
         { label: "Total Orders", value: orders.length, icon: "📦", color: "#2563EB" },
-        { label: "Pending Review", value: orders.filter(o => ["ordered", "arrived", "arrived_at_hub"].includes(o.status)).length, icon: "⏳", color: "#F59E0B" },
-        { label: "Inspections Done", value: inspections.filter(i => i.status === "passed" || i.status === "failed").length, icon: "✅", color: "#10B981" },
-        { label: "Active Returns", value: returns.filter(r => r.status === "pending").length, icon: "🔄", color: "#8B5CF6" },
+        { label: "Revenue", value: `₹${totalRevenue.toLocaleString("en-IN")}`, icon: "💰", color: "#10B981" },
+        { label: "Fees Earned", value: `₹${totalFees.toLocaleString("en-IN")}`, icon: "🏦", color: "#8B5CF6" },
+        { label: "Pending", value: orders.filter(o => ["ordered", "arrived"].includes(o.status)).length, icon: "⏳", color: "#F59E0B" },
+        { label: "Delivered", value: deliveredCount, icon: "✅", color: "#10B981" },
+        { label: "Cancelled", value: cancelledCount, icon: "❌", color: "#EF4444" },
+        { label: "Active Returns", value: returns.filter(r => r.status === "pending").length, icon: "🔄", color: "#EC4899" },
+        { label: "COD Orders", value: codOrders, icon: "💵", color: "#C2410C" },
     ];
 
     if (loading) {
@@ -269,34 +353,34 @@ export default function AdminPage() {
                     <div style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(4, 1fr)",
-                        gap: "16px",
+                        gap: "12px",
                         marginBottom: "28px",
                     }}>
                         {statCards.map((s) => (
                             <div key={s.label} style={{
                                 background: "white",
-                                borderRadius: "16px",
-                                padding: "20px 22px",
+                                borderRadius: "14px",
+                                padding: "16px 18px",
                                 border: "1px solid #E5E7EB",
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "16px",
+                                gap: "12px",
                                 animation: "riseUp 0.5s ease both",
                             }}>
                                 <div style={{
-                                    width: "46px", height: "46px",
+                                    width: "40px", height: "40px",
                                     background: `${s.color}12`,
-                                    borderRadius: "12px",
+                                    borderRadius: "10px",
                                     display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: "1.3rem",
+                                    fontSize: "1.1rem",
                                 }}>{s.icon}</div>
                                 <div>
                                     <div style={{
                                         fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                        fontSize: "1.5rem", fontWeight: 800,
+                                        fontSize: "1.2rem", fontWeight: 800,
                                         color: s.color, letterSpacing: "-0.02em",
                                     }}>{s.value}</div>
-                                    <div style={{ fontSize: "0.78rem", color: "#6B7280", fontWeight: 500 }}>{s.label}</div>
+                                    <div style={{ fontSize: "0.7rem", color: "#6B7280", fontWeight: 500 }}>{s.label}</div>
                                 </div>
                             </div>
                         ))}
@@ -327,12 +411,14 @@ export default function AdminPage() {
                             >
                                 <span>{tab.icon}</span>
                                 {tab.label}
-                                <span style={{
-                                    background: activeTab === tab.key ? "#EFF6FF" : "#E5E7EB",
-                                    color: activeTab === tab.key ? "#2563EB" : "#6B7280",
-                                    padding: "2px 8px", borderRadius: "100px",
-                                    fontSize: "0.7rem", fontWeight: 700,
-                                }}>{tab.count}</span>
+                                {tab.count !== null && (
+                                    <span style={{
+                                        background: activeTab === tab.key ? "#EFF6FF" : "#E5E7EB",
+                                        color: activeTab === tab.key ? "#2563EB" : "#6B7280",
+                                        padding: "2px 8px", borderRadius: "100px",
+                                        fontSize: "0.7rem", fontWeight: 700,
+                                    }}>{tab.count}</span>
+                                )}
                             </button>
                         ))}
                     </div>
@@ -348,25 +434,95 @@ export default function AdminPage() {
                                 padding: "18px 20px",
                                 borderBottom: "1px solid #F3F4F6",
                                 display: "flex", justifyContent: "space-between", alignItems: "center",
+                                flexWrap: "wrap", gap: "12px",
                             }}>
                                 <h2 style={{
                                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                                     fontSize: "1.05rem", fontWeight: 700, color: "#111827",
                                 }}>All Orders</h2>
-                                <span style={{ fontSize: "0.82rem", color: "#6B7280" }}>{orders.length} total</span>
+                                <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                                    <input
+                                        type="text" placeholder="🔍 Search orders..."
+                                        value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                                        style={{
+                                            padding: "8px 14px", borderRadius: "10px",
+                                            border: "1.5px solid #E5E7EB", fontSize: "0.82rem",
+                                            fontFamily: "'Inter', sans-serif", width: "200px",
+                                            outline: "none",
+                                        }}
+                                    />
+                                    <select
+                                        value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
+                                        style={{
+                                            padding: "8px 12px", borderRadius: "10px",
+                                            border: "1.5px solid #E5E7EB", fontSize: "0.82rem",
+                                            fontFamily: "'Inter', sans-serif", cursor: "pointer",
+                                        }}
+                                    >
+                                        <option value="all">All Status</option>
+                                        {["ordered", "arrived", "inspecting", "passed", "failed", "dispatched", "delivered", "cancelled"].map(s => (
+                                            <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                                        ))}
+                                    </select>
+                                    <button className="action-btn btn-status" onClick={exportCSV}>📥 Export CSV</button>
+                                    <span style={{ fontSize: "0.82rem", color: "#6B7280" }}>{filteredOrders.length} results</span>
+                                </div>
                             </div>
+
+                            {/* Bulk Actions */}
+                            {selectedOrders.length > 0 && (
+                                <div style={{
+                                    padding: "10px 20px", background: "#EFF6FF",
+                                    borderBottom: "1px solid #BFDBFE",
+                                    display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap",
+                                }}>
+                                    <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#2563EB" }}>
+                                        {selectedOrders.length} selected
+                                    </span>
+                                    {["arrived", "inspecting", "dispatched", "delivered"].map(s => (
+                                        <button key={s} className="action-btn btn-status" style={{ fontSize: "0.7rem" }}
+                                            onClick={() => handleBulkStatus(s)}>
+                                            → {s.charAt(0).toUpperCase() + s.slice(1)}
+                                        </button>
+                                    ))}
+                                    <button className="action-btn" style={{ background: "#F3F4F6", fontSize: "0.7rem" }}
+                                        onClick={() => setSelectedOrders([])}>
+                                        Clear
+                                    </button>
+                                </div>
+                            )}
                             <div style={{ overflowX: "auto" }}>
                                 <table className="admin-table">
                                     <thead>
                                         <tr>
-                                            {["Order ID", "Product", "Marketplace", "Customer", "Amount", "Status", "Inspector", "Actions"].map((h) => (
+                                            <th style={{ width: "32px" }}>
+                                                <input type="checkbox"
+                                                    checked={selectedOrders.length === filteredOrders.length && filteredOrders.length > 0}
+                                                    onChange={() => {
+                                                        if (selectedOrders.length === filteredOrders.length) {
+                                                            setSelectedOrders([]);
+                                                        } else {
+                                                            setSelectedOrders(filteredOrders.map(o => o.id));
+                                                        }
+                                                    }}
+                                                    style={{ cursor: "pointer" }}
+                                                />
+                                            </th>
+                                            {["Order ID", "Product", "Marketplace", "Customer", "Amount", "Payment", "Status", "Inspector", "Actions"].map((h) => (
                                                 <th key={h}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {orders.map((order) => (
-                                            <tr key={order.id}>
+                                        {filteredOrders.map((order) => (
+                                            <tr key={order.id} style={{ background: selectedOrders.includes(order.id) ? "#EFF6FF" : undefined }}>
+                                                <td>
+                                                    <input type="checkbox"
+                                                        checked={selectedOrders.includes(order.id)}
+                                                        onChange={() => toggleOrderSelection(order.id)}
+                                                        style={{ cursor: "pointer" }}
+                                                    />
+                                                </td>
                                                 <td style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.75rem", color: "#6B7280" }}>
                                                     #{order.id?.slice(0, 8)}
                                                 </td>
@@ -386,6 +542,16 @@ export default function AdminPage() {
                                                     <div style={{ fontSize: "0.72rem", color: "#9CA3AF" }}>{order.user?.email || ""}</div>
                                                 </td>
                                                 <td style={{ fontWeight: 700, color: "#111827" }}>₹{Number(order.price).toLocaleString("en-IN")}</td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: "3px 8px", borderRadius: "8px",
+                                                        fontSize: "0.68rem", fontWeight: 600,
+                                                        background: order.payment_status === "cod" ? "#FFF7ED" : order.payment_status === "refunded" ? "#FEF2F2" : "#ECFDF5",
+                                                        color: order.payment_status === "cod" ? "#C2410C" : order.payment_status === "refunded" ? "#DC2626" : "#059669",
+                                                    }}>
+                                                        {order.payment_status === "cod" ? "COD" : order.payment_status === "refunded" ? "Refund" : "Paid"}
+                                                    </span>
+                                                </td>
                                                 <td><StatusBadge status={order.status} /></td>
                                                 <td>
                                                     {order.inspector?.full_name || (
@@ -420,15 +586,122 @@ export default function AdminPage() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {orders.length === 0 && (
+                                        {filteredOrders.length === 0 && (
                                             <tr>
-                                                <td colSpan={8} style={{ textAlign: "center", padding: "48px", color: "#9CA3AF" }}>
-                                                    No orders yet
+                                                <td colSpan={10} style={{ textAlign: "center", padding: "48px", color: "#9CA3AF" }}>
+                                                    {searchQuery || statusFilter !== "all" ? "No matching orders" : "No orders yet"}
                                                 </td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ANALYTICS TAB */}
+                    {activeTab === "analytics" && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                                <div style={{ background: "white", borderRadius: "16px", border: "1px solid #E5E7EB", padding: "24px" }}>
+                                    <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1rem", fontWeight: 700, color: "#111827", marginBottom: "20px" }}>
+                                        📊 Platform Breakdown
+                                    </h3>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                        {Object.entries(platformBreakdown).sort((a, b) => b[1] - a[1]).map(([platform, count]) => {
+                                            const pct = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
+                                            const colors = { Amazon: "#FF9900", Flipkart: "#2563EB", Meesho: "#E91E63", Myntra: "#FF3F6C", Nykaa: "#FC2779" };
+                                            return (
+                                                <div key={platform}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                                                        <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>{platform}</span>
+                                                        <span style={{ fontSize: "0.82rem", color: "#6B7280" }}>{count} orders ({pct}%)</span>
+                                                    </div>
+                                                    <div style={{ height: "8px", background: "#F3F4F6", borderRadius: "100px", overflow: "hidden" }}>
+                                                        <div style={{ height: "100%", width: `${pct}%`, background: colors[platform] || "#6B7280", borderRadius: "100px", transition: "width 0.5s ease" }} />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {Object.keys(platformBreakdown).length === 0 && <div style={{ color: "#9CA3AF", textAlign: "center", padding: "20px" }}>No data yet</div>}
+                                    </div>
+                                </div>
+                                <div style={{ background: "white", borderRadius: "16px", border: "1px solid #E5E7EB", padding: "24px" }}>
+                                    <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1rem", fontWeight: 700, color: "#111827", marginBottom: "20px" }}>
+                                        📈 Status Distribution
+                                    </h3>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                        {Object.entries(statusBreakdown).sort((a, b) => b[1] - a[1]).map(([status, count]) => {
+                                            const pct = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
+                                            const colors = { ordered: "#F59E0B", arrived: "#3B82F6", inspecting: "#8B5CF6", passed: "#10B981", failed: "#EF4444", dispatched: "#06B6D4", delivered: "#059669", cancelled: "#DC2626" };
+                                            return (
+                                                <div key={status}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                                                        <span style={{ fontSize: "0.85rem", fontWeight: 600, textTransform: "capitalize" }}>{status}</span>
+                                                        <span style={{ fontSize: "0.82rem", color: "#6B7280" }}>{count} ({pct}%)</span>
+                                                    </div>
+                                                    <div style={{ height: "8px", background: "#F3F4F6", borderRadius: "100px", overflow: "hidden" }}>
+                                                        <div style={{ height: "100%", width: `${pct}%`, background: colors[status] || "#6B7280", borderRadius: "100px", transition: "width 0.5s ease" }} />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {Object.keys(statusBreakdown).length === 0 && <div style={{ color: "#9CA3AF", textAlign: "center", padding: "20px" }}>No data yet</div>}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px" }}>
+                                {[
+                                    { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString("en-IN")}`, icon: "💰", color: "#10B981" },
+                                    { label: "ShieldCart Fees", value: `₹${totalFees.toLocaleString("en-IN")}`, icon: "🏦", color: "#8B5CF6" },
+                                    { label: "Online Payments", value: paidOrders, icon: "💳", color: "#2563EB" },
+                                    { label: "COD Orders", value: codOrders, icon: "💵", color: "#C2410C" },
+                                ].map(s => (
+                                    <div key={s.label} style={{ background: "white", borderRadius: "14px", padding: "20px", border: "1px solid #E5E7EB", textAlign: "center" }}>
+                                        <div style={{ fontSize: "1.5rem", marginBottom: "6px" }}>{s.icon}</div>
+                                        <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1.4rem", fontWeight: 800, color: s.color }}>{s.value}</div>
+                                        <div style={{ fontSize: "0.75rem", color: "#6B7280", marginTop: "4px" }}>{s.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ACTIVITY LOG TAB */}
+                    {activeTab === "activity" && (
+                        <div style={{ background: "white", borderRadius: "16px", border: "1px solid #E5E7EB", padding: "24px" }}>
+                            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "1.05rem", fontWeight: 700, color: "#111827", marginBottom: "20px" }}>
+                                🕐 Recent Activity
+                            </h2>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {recentActivity.map((item, idx) => (
+                                    <div key={item.id + idx} style={{
+                                        display: "flex", gap: "16px", padding: "14px 0",
+                                        borderBottom: idx < recentActivity.length - 1 ? "1px solid #F3F4F6" : "none",
+                                        alignItems: "center",
+                                    }}>
+                                        <div style={{
+                                            width: "36px", height: "36px", borderRadius: "10px",
+                                            background: item.status === "delivered" ? "#ECFDF5" : item.status === "cancelled" ? "#FEF2F2" : item.status === "ordered" ? "#FFF7ED" : "#EFF6FF",
+                                            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0,
+                                        }}>
+                                            {item.status === "delivered" ? "✅" : item.status === "cancelled" ? "❌" : item.status === "ordered" ? "🆕" : "📦"}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: "0.88rem", fontWeight: 600, color: "#111827" }}>{item.product}</div>
+                                            <div style={{ fontSize: "0.75rem", color: "#6B7280" }}>
+                                                {item.customer} · {item.platform} · <StatusBadge status={item.status} />
+                                            </div>
+                                        </div>
+                                        <div style={{ fontSize: "0.75rem", color: "#9CA3AF", whiteSpace: "nowrap" }}>
+                                            {new Date(item.time).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}{" "}
+                                            {new Date(item.time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                                        </div>
+                                    </div>
+                                ))}
+                                {recentActivity.length === 0 && (
+                                    <div style={{ textAlign: "center", padding: "48px", color: "#9CA3AF" }}>No activity yet</div>
+                                )}
                             </div>
                         </div>
                     )}

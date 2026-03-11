@@ -2,8 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 
 const SUGGESTED_PROMPTS = [
+    "What's the status of my order?",
     "Help me pick headphones under ₹5000",
-    "Analyse reviews for Sony WH-1000XM5",
     "How does inspection work?",
     "Compare iPhone 16 across platforms",
     "Is this Flipkart seller trustworthy?",
