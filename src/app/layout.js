@@ -18,7 +18,7 @@ const lora = Lora({
 export const metadata = {
   title: "ShieldCart — Consumer Safety Platform",
   description:
-    "ShieldCart physically inspects every product before delivery and verifies every return before it reaches sellers. Two-sided trust for Indian e-commerce.",
+    "ShieldCart physically inspects every product before delivery so you never receive defective, counterfeit, or wrong items. Your trusted consumer protection platform for Indian e-commerce.",
   keywords: [
     "ShieldCart",
     "consumer safety",

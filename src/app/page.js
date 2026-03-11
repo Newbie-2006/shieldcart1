@@ -737,15 +737,15 @@ export default function LandingPage() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-left">
-          <div className="hero-tag">Two-Sided Trust Platform</div>
+          <div className="hero-tag">Consumer Protection Platform</div>
           <h1>
             Every Product.<br />
             <em>Inspected.</em><br />
-            Every Return.<br />
-            <span className="accent">Verified.</span>
+            Before It<br />
+            <span className="accent">Reaches You.</span>
           </h1>
           <p className="hero-body">
-            ShieldCart sits between online marketplaces and you — physically checking every product before delivery, and authenticating every return before it reaches sellers. Fair for everyone.
+            ShieldCart sits between online marketplaces and you — physically inspecting every product before delivery so you never receive defective, counterfeit, or wrong items. Your safety, guaranteed.
           </p>
           <div className="hero-actions">
             <Link href="/signup" className="btn-olive" style={{ textDecoration: 'none' }}>
@@ -843,36 +843,36 @@ export default function LandingPage() {
 
       <div className="ruled"></div>
 
-      {/* TWO-SIDED PROTECTION */}
+      {/* COMPLETE PROTECTION */}
       <section id="solution" className="sec">
         <div className="tag-chip chip-olive">Our Core Strength</div>
-        <h2 className="sec-h">We Protect <em>Both Sides</em> —<br />Nobody Else Does</h2>
-        <p className="sec-p">ShieldCart isn&#39;t just consumer protection. We equally protect sellers from fraudulent buyers — making us the only truly neutral party.</p>
+        <h2 className="sec-h">Complete Protection<br /><em>At Every Step</em></h2>
+        <p className="sec-p">From the moment you place an order to the moment it reaches your door — ShieldCart ensures you only receive genuine, quality-checked products.</p>
 
         <div className="two-col">
           <div className="ts-box consumer">
-            <div className="tag-chip chip-olive" style={{ marginBottom: '14px' }}>Consumer Shield</div>
-            <h3>You Are Safe</h3>
-            <small>What every buyer gets with ShieldCart</small>
+            <div className="tag-chip chip-olive" style={{ marginBottom: '14px' }}>Before Delivery</div>
+            <h3>Every Product Inspected</h3>
+            <small>What happens before your order reaches you</small>
             <div className="ts-items">
               <div className="ts-item"><span className="ts-dot">✓</span>Physical inspection before every delivery — no defective products reach you</div>
               <div className="ts-item"><span className="ts-dot">✓</span>Authenticity verified against serial numbers and brand markers</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>We handle your returns — you never deal with a seller directly</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>Every product photographed and documented for your records</div>
               <div className="ts-item"><span className="ts-dot">✓</span>Timestamped inspection certificate delivered with every order</div>
               <div className="ts-item"><span className="ts-dot">✓</span>If anything slips through our check — we take full accountability</div>
             </div>
           </div>
 
           <div className="ts-box seller">
-            <div className="tag-chip chip-burnt" style={{ marginBottom: '14px' }}>Seller Shield</div>
-            <h3>Sellers Are Safe Too</h3>
-            <small>How we protect honest sellers</small>
+            <div className="tag-chip chip-burnt" style={{ marginBottom: '14px' }}>Hassle-Free Returns</div>
+            <h3>Easy & Verified Returns</h3>
+            <small>How we make returns effortless for you</small>
             <div className="ts-items">
-              <div className="ts-item"><span className="ts-dot">✓</span>All returns intercepted at our hub — verified before reaching sellers</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Returned item photo-matched against our pre-delivery evidence archive</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Serial number and condition matched — swap fraud is impossible</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Customers with suspicious return patterns flagged and blacklisted</div>
-              <div className="ts-item"><span className="ts-dot">✓</span>Full photographic dispute report provided to sellers on any claim</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>Request returns instantly from your dashboard — no marketplace runaround</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>Our inspection archive proves the product condition at delivery</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>Faster refund processing with verified evidence on your side</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>Full photographic proof available for any dispute resolution</div>
+              <div className="ts-item"><span className="ts-dot">✓</span>ShieldCart handles the entire return process — you just sit back</div>
             </div>
           </div>
         </div>
@@ -1058,17 +1058,17 @@ export default function LandingPage() {
 
       {/* CTA BAND */}
       <div className="cta-band">
-        <h2>The First Platform That Protects <em>Everyone</em> Equally</h2>
-        <p>ShieldCart is not just a service — it&#39;s a new trust infrastructure for Indian e-commerce.</p>
+        <h2>Shop Online With <em>Complete Confidence</em></h2>
+        <p>ShieldCart is not just a service — it&#39;s your personal product quality guarantee for every online purchase.</p>
         <Link href="/signup" className="btn-white" style={{ textDecoration: 'none' }}>
-          🛡 ShieldCart — Guard Both Sides
+          🛡 Start Shopping Safely
         </Link>
       </div>
 
       {/* FOOTER */}
       <footer className="landing-footer">
         <div className="footer-logo">Shield<span>Cart</span></div>
-        <div className="footer-r">S3 Consumer Safety Track<br />Two-Sided Trust & Quality Assurance Platform</div>
+        <div className="footer-r">S3 Consumer Safety Track<br />Product Inspection & Consumer Protection Platform</div>
       </footer>
     </>
   );
