@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -8,6 +8,14 @@ import { createClient } from "@/lib/supabase-browser";
 const PLATFORMS = ["Amazon", "Flipkart", "Meesho", "Myntra", "Nykaa"];
 
 export default function NewOrderPage() {
+    return (
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--canvas)' }}><Navbar /><div style={{ textAlign: 'center', paddingTop: '200px' }}><div className="spinner" style={{ margin: '0 auto' }} /></div></div>}>
+            <NewOrderForm />
+        </Suspense>
+    );
+}
+
+function NewOrderForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const supabase = createClient();
