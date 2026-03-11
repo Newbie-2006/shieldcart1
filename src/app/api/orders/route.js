@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient, createServiceClient } from "@/lib/supabase-server";
 import { verifyPaymentSignature } from "@/lib/razorpay";
 
 export async function GET(request) {
@@ -10,7 +10,9 @@ export async function GET(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { data, error } = await supabase
+        // Use service client to bypass RLS for reading orders
+        const serviceSupabase = await createServiceClient();
+        const { data, error } = await serviceSupabase
             .from("orders")
             .select("*")
             .eq("user_id", user.id)
@@ -45,11 +47,10 @@ export async function POST(request) {
             test_mode,
         } = body;
 
-        // Skip payment verification in test mode (when Razorpay keys are placeholders)
+        // Skip payment verification in test mode (COD or placeholder keys)
         const isTestMode = test_mode || process.env.RAZORPAY_KEY_ID === "rzp_test_placeholder";
 
         if (!isTestMode) {
-            // Verify Razorpay payment signature
             const isValid = verifyPaymentSignature({
                 razorpay_order_id,
                 razorpay_payment_id,
@@ -61,7 +62,9 @@ export async function POST(request) {
             }
         }
 
-        const { data, error } = await supabase.from("orders").insert({
+        // Use service client to bypass RLS for inserting orders
+        const serviceSupabase = await createServiceClient();
+        const { data, error } = await serviceSupabase.from("orders").insert({
             user_id: user.id,
             product_url,
             product_name,
